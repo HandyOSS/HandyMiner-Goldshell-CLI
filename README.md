@@ -3,7 +3,7 @@
 HANDYMINER
 2020 Alex Smith <alex.smith@earthlab.tech>
 
-### [🐍HandyMiner Quick Start Guide🐍](https://handyminer.github.io/HandyGuide/)
+### [🐍HandyMiner Quick Start Guide🐍](https://handyminer.github.io/HandyMiner-Goldshell-CLI/)
 
 **HandyMiner Team Donation Address (HNS): hs1qwfpd5ukdwdew7tn7vdgtk0luglgckp3klj44f8**
 **HandyMiner Team Donation Address (BTC): bc1qk3rk4kgek0hzpgs8qj4yej9j5fs7kcnjk7kuvt**
