@@ -1,0 +1,52 @@
+<div id="header">HandyMiner Goldshell - Руководство пользователя</div>
+<div id="main">
+	<ul>
+		<li><a id="downloadZIP" href="https://github.com/HandyMiner/HandyMiner-CLI/releases/download/KingCobra_0.0.3/HandyMiner_KingCobra_0.0.3.zip" target="_blank">Загрузка HandyMiner Релиз ZIP</a> или <a id="downloadTAR" href="https://github.com/HandyMiner/HandyMiner-CLI/releases/download/KingCobra_0.0.3/HandyMiner_KingCobra_0.0.3.tar.xz" target="_blank">Загрузка HandyMiner Релиз Tarball</a></li>
+		<li>
+			<strong>Зависимости:</strong>
+			<ul>
+				<li>Устанавливаем <a href="https://nodejs.org/en/download/" target="_blank">nodeJS</a></li>
+				<li>(Только для windows) Устанавливаем <a href="https://git-scm.com/downloads" target="_blank">git bash</a> в директорию Program Files/Git</li>
+				<li>(Только для windows) Устанавливаем <a href="https://github.com/goldshellminer/HS1/tree/master/miner/serial_driver" target="_blank">Virtual COM Port Drivers</a> from Goldshell for USB ASIC support</li>
+			</ul>
+		</li>
+		<li>
+			<strong>Запуск:</strong>
+			<ul>
+				<li>Для Windows: Двойной щелчек по &#039;dashboard.windows.bat&#039;</li>
+				<li>Для Linux: Двойной щелчек по &#039;dashboard.sh&#039;</li>
+				<li>Для Mac: double click &#039;dashboard.mac.command&#039;</li>
+				<li>CLI запуск: <input id="cliCommand" class="selectMe" value="npm start" readonly="readonly" size=9 /> или <input id="cliCommand2" class="selectMe" value="./dashboard.sh" readonly="readonly" size=15 /> </li>
+			</ul>
+		</li>
+		<li>
+			<strong>Конфигурация:</strong> Первый запуск майнера запросит конфигурацию оборудования
+			<ul>
+				<li>Установка режима соло либо пул ( solo | pool )</li>
+				<li>
+					<strong>Адреса пулов:</strong>
+					<ul>
+						<li><strong>f2pool</strong> <input class="selectMe" value="hns.f2pool.com" readonly="readonly" size=14 /> порт: <input class="selectMe" value="6000" readonly="readonly" size=4 /> <br />Имя пользователя: Адрес.имяПользователя <br /> Пароль: любой</li>
+						<li><strong>6block</strong> <input class="selectMe" value="stratum+tcp://handshake.6block.com" readonly="readonly" size=36 /> порт: <input class="selectMe" value="7701" readonly="readonly" size=4 /> <br />Имя пользователя: зарегистрированноеИмяПользователя <br /> Пароль: любой</li>
+						<li><strong>PoolFlare</strong> <input class="selectMe" value="hns-us.ss.poolflare.com" readonly="readonly" size=24 /> порт: <input class="selectMe" value="3355" readonly="readonly" size=4 /> <br />Имя пользователя: Адрес.имяПользователя <br /> Пароль: любой</li>
+						<li><strong>hnspool</strong> <input class="selectMe" value="stratum-us.hnspool.com" readonly="readonly" size=23 /> порт: <input class="selectMe" value="3001" readonly="readonly" size=4 /> <br />Имя пользователя: зарегистрированноеИмяПользователя <br /> Пароль: Зарегистрированный пароль</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<strong>Кошельки:</strong> 
+			<ul>
+				<li><a href="https://github.com/kyokan/bob-wallet/releases" target="_blank">Bob Wallet</a> (Графический интерфейс, децентрализованный)</li>
+			</ul>
+		</li>
+		<li>
+			<strong>Калькуляторы:</strong> 
+			<ul>
+				<li><a href="https://HandyMiner.github.io/HandyCalculator/gpu.html" target="_blank">GPU Mining Calculator</a></li>
+				<li><a href="https://HandyMiner.github.io/HandyCalculator/index.html" target="_blank">ASIC ROI Calculator</a></li>
+			</ul>
+		</li>
+	</ul>
+	
+</div>

@@ -1,0 +1,53 @@
+<div id="header">HandyMiner Goldshell - Guide de démarrage rapide</div>
+<div id="main">
+	<ul>
+		<li><a id="downloadZIP" href="https://github.com/HandyMiner/HandyMiner-CLI/releases/download/KingCobra_0.0.3/HandyMiner_KingCobra_0.0.3.zip" target="_blank">Telecharger HandyMiner Version ZIP</a> ou <a id="downloadTAR" href="https://github.com/HandyMiner/HandyMiner-CLI/releases/download/KingCobra_0.0.3/HandyMiner_KingCobra_0.0.3.tar.xz" target="_blank">Telecharger HandyMiner Version Tarball</a></li>
+		<li>
+			<strong>Prérequis:</strong>
+			<ul>
+				<li>Installer <a href="https://nodejs.org/en/download/" target="_blank">nodeJS</a></li>
+				<li>(windows uniquement) Installer <a href="https://git-scm.com/downloads" target="_blank">git bash</a> dans le répertoire Programmes/Git</li>
+				<li>(windows uniquement) Installer <a href="https://github.com/goldshellminer/HS1/tree/master/miner/serial_driver" target="_blank">Virtual COM Port Drivers</a> from Goldshell for USB ASIC support</li>
+			</ul>
+		</li>
+		<li>
+			<strong>Exécution:</strong>
+			<ul>
+				<li>Windows: double cliquer &#039;dashboard.windows.bat&#039;</li>
+				<li>Linux: double cliquer &#039;dashboard.sh&#039;</li>
+				<li>Mac: double cliquer &#039;dashboard.mac.command&#039;</li>
+				<li>CLI: <input id="cliCommand" class="selectMe" value="npm start" readonly="readonly" size=9 /> ou <input id="cliCommand2" class="selectMe" value="./dashboard.sh" readonly="readonly" size=15 /> </li>
+			</ul>
+		</li>
+		<li>
+			<strong>Configuration:</strong> La première exécution nécessite la configuration matérielle
+
+			<ul>
+				<li>Choisir un mode ( solo | pool )</li>
+				<li>
+					<strong>Hébergeurs de Pool:</strong>
+					<ul>
+						<li><strong>f2pool</strong> <input class="selectMe" value="hns.f2pool.com" readonly="readonly" size=14 /> port: <input class="selectMe" value="6000" readonly="readonly" size=4 /> <br />identifiant: adresse.NomduMineur <br /> mot de passe: au choix </li>
+						<li><strong>6block</strong> <input class="selectMe" value="stratum+tcp://handshake.6block.com" readonly="readonly" size=36 /> port: <input class="selectMe" value="7701" readonly="readonly" size=4 /> <br />identifiant: NomduMineurInscrit <br /> mot de passe: au choix</li>
+						<li><strong>PoolFlare</strong> <input class="selectMe" value="hns-us.ss.poolflare.com" readonly="readonly" size=24 /> port: <input class="selectMe" value="3355" readonly="readonly" size=4 /> <br />identifiant: adresse.NomduMineur <br /> mot de passe: au choix</li>
+						<li><strong>hnspool</strong> <input class="selectMe" value="stratum-us.hnspool.com" readonly="readonly" size=23 /> port: <input class="selectMe" value="3001" readonly="readonly" size=4 /> <br />identifiant: NomUtilisateurInscrit <br /> mot de passe: MotdePasseInscrit</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<strong>Porte-monnaies:</strong> 
+			<ul>
+				<li><a href="https://github.com/kyokan/bob-wallet/releases" target="_blank">Bob Wallet</a> (Interface Graphique, contrôlé par l’utilisateur)</li>
+			</ul>
+		</li>
+		<li>
+			<strong>Calculatrices:</strong> 
+			<ul>
+				<li><a href="https://HandyMiner.github.io/HandyCalculator/gpu.html" target="_blank">GPU Mining Calculator</a></li>
+				<li><a href="https://HandyMiner.github.io/HandyCalculator/index.html" target="_blank">ASIC ROI Calculator</a></li>
+			</ul>
+		</li>
+	</ul>
+	
+</div>

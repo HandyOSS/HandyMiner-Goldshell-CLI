@@ -1,0 +1,52 @@
+<div id="header">HandyMiner Goldshell - 快速入门指南</div>
+<div id="main">
+	<ul>
+		<li><a id="downloadZIP" href="https://github.com/HandyMiner/HandyMiner-CLI/releases/download/KingCobra_0.0.3/HandyMiner_KingCobra_0.0.3.zip" target="_blank">下载 HandyMiner Release ZIP</a> 或<a id="downloadTAR" href="https://github.com/HandyMiner/HandyMiner-CLI/releases/download/KingCobra_0.0.3/HandyMiner_KingCobra_0.0.3.tar.xz" target="_blank">下载 HandyMiner Release Tarball</a></li>
+		<li>
+			<strong>先决条件：</strong>
+			<ul>
+				<li>安装 <a href="https://nodejs.org/en/download/" target="_blank">nodeJS</a></li>
+				<li>（仅限 windows）将 <a href="https://git-scm.com/downloads" target="_blank">git bash</a> 安装到 Program Files/Git</li>
+				<li>（仅限 windows）将 <a href="https://github.com/goldshellminer/HS1/tree/master/miner/serial_driver" target="_blank">Virtual COM Port Drivers</a> from Goldshell for USB ASIC support</li>
+			</ul>
+		</li>
+		<li>
+			<strong>运行：</strong>
+			<ul>
+				<li>Windows：双击“dashboard.windows.bat”</li>
+				<li>Linux：双击“dashboard.sh”</li>
+				<li>Mac：双击“dashboard.mac.command”</li>
+				<li>CLI： <input id="cliCommand" class="selectMe" value="npm start" readonly="readonly" size="9"> 或 <input id="cliCommand" class="selectMe" value="./dashboard.sh" readonly="readonly" size="15"> </li>
+			</ul>
+		</li>
+		<li>
+			<strong>配置：</strong>首次运行将启动配置器
+			<ul>
+				<li>设置模式（单独 | 库）</li>
+				<li>
+					<strong>库主机：</strong>
+					<ul>
+						<li><strong>f2pool</strong> <input class="selectMe" value="hns.f2pool.com" readonly="readonly" size="14"> 端口： <input class="selectMe" value="6000" readonly="readonly" size="4"> <br/>用户名：wallet.workerName <br/> 密码：anything</li>
+						<li><strong>6block</strong> <input class="selectMe" value="stratum+tcp://handshake.6block.com" readonly="readonly" size="36"> 端口： <input class="selectMe" value="7701" readonly="readonly" size="4"> <br/>用户名：registeredMinerName <br/> 密码：anything</li>
+						<li><strong>PoolFlare</strong> <input class="selectMe" value="hns-us.ss.poolflare.com" readonly="readonly" size="24"> 端口： <input class="selectMe" value="3355" readonly="readonly" size="4"> <br/>用户名：wallet.workerName <br/> 密码：anything</li>
+						<li><strong>hnspool</strong> <input class="selectMe" value="stratum-us.hnspool.com" readonly="readonly" size="23"> 端口： <input class="selectMe" value="3001" readonly="readonly" size="4"> <br/>用户名：registeredUsername <br/> 密码：registeredUserPassword</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<strong>钱夹：</strong> 
+			<ul>
+				<li><a href="https://github.com/kyokan/bob-wallet/releases" target="_blank">Bob Wallet</a>（GUI，非监禁）</li>
+			</ul>
+		</li>
+		<li>
+			<strong>计算器：</strong> 
+			<ul>
+				<li><a href="https://HandyMiner.github.io/HandyCalculator/gpu.html" target="_blank">GPU Mining Calculator</a></li>
+				<li><a href="https://HandyMiner.github.io/HandyCalculator/index.html" target="_blank">ASIC ROI Calculator</a></li>
+			</ul>
+		</li>
+	</ul>
+	
+</div>
