@@ -1,4 +1,6 @@
 ![](https://raw.githubusercontent.com/HandyMiner/HandyGuide/72303a89968942dc945e05588db5db2a6610c539/logo/cobra.svg =100x100)
+<img src="https://raw.githubusercontent.com/HandyMiner/HandyGuide/72303a89968942dc945e05588db5db2a6610c539/logo/cobra.svg" />
+
 HANDYMINER
 2020 Alex Smith <alex.smith@earthlab.tech>
 
