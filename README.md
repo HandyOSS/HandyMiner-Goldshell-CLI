@@ -41,6 +41,8 @@ to communicate with Handshake HSD via Stratum Mining.
 
 (**Windows Users**) [Git Bash](https://git-scm.com/downloads) A handy bash terminal, **install in Program Files/Git**
 
+(**Windows Users**) [Download STM32 Virtual COM PORT driver from Goldshell](https://github.com/goldshellminer/HS1/tree/master/miner/serial_driver) OR [Download STM32 Virtual COM PORT driver from STMicroelectronics](https://www.st.com/en/development-tools/stsw-stm32102.html)
+
 (optional) [Docker](#dockerReminders) if you want to run your own fullnode to mine to with the provided utilities
 
 Linux: Dependencies install can be found in [./linux_installation.md](./linux_installation.md)
