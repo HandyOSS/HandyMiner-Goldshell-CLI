@@ -571,8 +571,8 @@ class CLIDashboard{
 	  	'Rig Hashrate: \x1b[36m'+(numeral(this.statsData['hashrate']).format('0.00')+'GH')+'\x1b[0m',
 	  	'Avg Hashrate: \x1b[36m'+(numeral(this.statsData['hashrate120']).format('0.00')+'GH')+'\x1b[0m',
 	  	'Target: \x1b[36m0x'+(this.statsData.target.slice(0,32))+'\x1b[0m',
-	  	'Share Diff: \x1b[36m'+(numeral(this.statsData.difficulty).format('0.0b').replace('B',''))+'\x1b[0m',
-	  	'Network Diff:'+(numeral(this.statsData.networkDifficulty).format('0.0b').replace('B',''))+'\x1b[0m'
+	  	'Share Diff: \x1b[36m'+(numeral(this.statsData.difficulty).format('0.0a'))+'\x1b[0m',
+	  	'Network Diff: \x1b[36m'+(numeral(this.statsData.networkDifficulty).format('0.0a').toUpperCase())+'\x1b[0m'
 	  ];
 	  
 	  this.statsBox.logLines = [];
@@ -805,7 +805,7 @@ class CLIDashboard{
 	  	'Started: \x1b[36m'+moment().format('MMM-DD HH:mm')+'\x1b[0m',
 	  	'Rig Hashrate:\x1b[36m---MH\x1b[0m',
 	  	'Target: \x1b[36m---\x1b[0m',
-	  	'Share Diff: \x1b[36m---\x1b[0m'
+	  	'Share Diff: \x1b[36m---\x1b[0m',
 	  	'Network Diff: \x1b[36m---\x1b[0m'
 	  ];
 	  statsData.map(d=>{

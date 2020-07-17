@@ -117,6 +117,14 @@ Optional configuration items (just leave blank and hit enter if you dont know) :
 <a id="poolParameters"></a>
 ## POOL SETTINGS
 
+#### DXPOOL
+
+**stratum host**: hns.ss.dxpool.com
+**stratum port**: 3008
+
+**username**: registered_username.rigName
+**password**: anything
+
 #### F2POOL
 
 **stratum host**: hns.f2pool.com
