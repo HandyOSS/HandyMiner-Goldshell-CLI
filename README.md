@@ -72,6 +72,8 @@ Windows folks: If you didnt double click ```install.windows.bat``` youll need to
 <a id="running"></a>
 ## THE POINT
 
+First, make sure to plug AC power into the Goldshell HS1 and connect the USB from the HS1 to your computer. 
+
 Non-terminal users: simply double click ```(windows) dashboard.windows.bat``` or ```(mac) dashboard.mac.command``` or ```(linux) dashboard.sh``` files.
 
 **Note:** The first time you launch will run you thru the [miner configurator](#minerConfigurator).
