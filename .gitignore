@@ -1,0 +1,6 @@
+config*.json
+goldshell.json
+package.json
+package-lock.json
+node_modules
+

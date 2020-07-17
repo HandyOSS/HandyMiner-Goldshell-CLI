@@ -1,0 +1,10 @@
+{
+  "asics": "-1",
+  "host": "hns.f2pool.com",
+  "port": 6000,
+  "stratum_user": "hs1qwfpd5ukdwdew7tn7vdgtk0luglgckp3klj44f8.hs1",
+  "stratum_pass": "earthlab",
+  "mode": "pool",
+  "poolDifficulty": -1,
+  "muteWinningFanfare": false
+}
