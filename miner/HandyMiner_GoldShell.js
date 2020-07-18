@@ -159,18 +159,7 @@ class HandyMiner {
       process.env.TEMP = '/tmp';
     }
 
-    /*
-    './miner/HandyMiner.js',
-      this.config.gpus,
-      this.config.gpu_platform,
-      this.config.gpu_mfg,
-      'authorize',
-      this.hsdConfig.wallet,
-      this.config.stratum_user,
-      this.config.stratum_pass,
-      this.config.host,
-      this.config.port
-    */
+    
     if(process.argv[2] && process.argv[3] && process.argv[4]){
 
       /*this.gpuListString = process.argv[2];
@@ -180,15 +169,37 @@ class HandyMiner {
       this.config.gpu_mfg = process.argv[4].toLowerCase();*/
       this.asics = process.argv[2];
     }
+    /*
+    from gold shell gui
+    './mine.js',
+      this.config.asics,2
+      '',//this.config.gpu_platform,3
+      '',//this.config.gpu_mfg,4
+      'authorize',5
+      '',//this.hsdConfig.wallet,6
+      this.config.stratum_user,7
+      this.config.stratum_pass,8
+      this.config.host,9
+      this.config.port,10
+      this.config.intensity || "10",11
+      this.config.mode || "pool",12
+      this.config.poolDifficulty || -1,13
+      (this.config.muteFanfareSong ? "1" : "0")14
+    */
+    if(process.argv[7] && process.argv[8]){
+      this.stratumUser = process.argv[7];
+      this.stratumUserLocal = this.stratumUser;
+      this.stratumPass = process.argv[8];
+    }
     if(process.argv[9] && process.argv[10]){
       this.host = process.argv[9];
       this.port = process.argv[10];
 
     }
-    if(process.argv[11]){
+    /*if(process.argv[11]){
       //intensity
       this.minerIntensity = process.argv[11];
-    }
+    }*/
     if(process.argv[12]){
       //pool mode
       if(process.argv[12] == 'pool'){
@@ -198,17 +209,20 @@ class HandyMiner {
         this.config.mode = 'solo';
       }
     }
-    if(process.argv[13]){
+
+    
+    /*if(process.argv[13]){
       //pool difficulty
       this.poolDifficulty = parseInt(process.argv[13]);
       this.useStaticPoolDifficulty = true;
-    }
+    }*/
     if(process.argv[14]){
       //too many args sheesh
       //finally we mute fanfare
       let muteFanfare = parseInt(process.argv[14]) == 1 ? false : true;
       PlayWinningSound = muteFanfare;
     }
+
     this.propCalls = 1;
     this.gpuDeviceBlocks = {};
     this.workByHeaders = {};
@@ -648,14 +662,14 @@ class HandyMiner {
     let user = this.stratumUser, pass = this.stratumPass;
     let stratumServerPass = this.stratumPass;
     if(process.argv.indexOf('authorize') >= 0){
-      if(typeof process.argv[process.argv.indexOf('authorize')+1] != "undefined"){
-        //we have username
-        user = process.argv[process.argv.indexOf('authorize')+1];
-      }
       if(typeof process.argv[process.argv.indexOf('authorize')+2] != "undefined"){
+        //we have username
+        user = process.argv[process.argv.indexOf('authorize')+2];
+      }
+      if(typeof process.argv[process.argv.indexOf('authorize')+3] != "undefined"){
         //we have pass
-        pass = process.argv[process.argv.indexOf('authorize')+2];
-        stratumServerPass = process.argv[process.argv.indexOf('authorize')+2];
+        pass = process.argv[process.argv.indexOf('authorize')+3];
+        stratumServerPass = process.argv[process.argv.indexOf('authorize')+3];
       }
       if(typeof process.argv[process.argv.indexOf('authorize')+3] != "undefined"){
         //we have pass
@@ -887,14 +901,14 @@ class HandyMiner {
 
       console.log('\x1b[36mHANDY:: ACCEPTED '+granule+'! :::\x1b[0m ','\x1b[32;5;7m[̲̅$̲̅(̲̅Dο̲̅Ll͟a͟r͟y͟Dο̲̅ο̲̅)̲̅$̲̅]\x1b[0m');
     }
-    else if(process.env.HANDYRAW && !this.isMGoing){
+    /*else if(process.env.HANDYRAW && !this.isMGoing){
 
       process.stdout.write(JSON.stringify({type:'confirmation',granule:granule})+'\n');
-    }
+    }*/
     this.playSound();
     if(d.result && !this.isMGoing){
       if(process.env.HANDYRAW){
-        process.stdout.write(JSON.stringify({type:'confirmation',message:'Received Confirmation Response',data:d})+'\n')
+        process.stdout.write(JSON.stringify({type:'confirmation',granule:granule,message:'Received Confirmation Response',data:d})+'\n')
       }
       else{
         if(this.config.mode == 'pool'){
@@ -1235,8 +1249,6 @@ class HandyMiner {
         method:submitMethod,
         params:submission
       })+"\n";
-      
-      
       //this.solutionIDs[solID] = solutionData
       this.solutionIDs++;
       server.write(solutionData); //submit to stratum
