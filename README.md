@@ -200,23 +200,21 @@ Use your arrow keys, the list is scrollable. Hit space to multi-select and Enter
 ```
 C:\Program Files\nodejs\node_modules\npm\bin
 ```
-<a id="macFAQ"></a>
+<a id="linuxFAQ"></a>
 
-#### MAC FAQ:
+#### Linux FAQ
 
-![img](https://i.imgur.com/teYpH3Y.png)
-
-If you have a user-permission error, you'll need to run these commands to get the dashboard running on MacOS Mojave/Catalina. CD into your HandyMiner directory (the folder you downloaded), then run:
-
+If you try to mine out of the box without ```sudo``` you will see an error like:
+```asic connection error:: [Error: Error: Permission denied, cannot open /dev/ttyACM0]
 ```
-chmod 755 dashboard.mac.command
+If you dont want to run as sudo, you can modify your permissions to the ASIC device like so:
 
-Double click dashboard.mac.command
-```
-To run the miner CLI without the dashboard, you can simply run this command from your HandyMiner folder:
-```
-sudo node mine.js
-```
+0. Notice the serial address in the errror: ```/dev/ttyACM0```
+1. On the terminal, we will need to change the device owner to your user/user group. 
+  1. A. To get your group the easy was: on the terminal it will probably list your username and group as ```username@group:```
+  1. B. A little harder: First to get your user group, run ```groups```, likely the first group is the same as your username. You should already know your username.
+2. we will plug in the device address from the error to chown like so: ```chown myUserName:myUserGroup /dev/ttyACM0```
+3. Now you can run the miner without sudo
 
 <a id="runFullnode"></a>
 ### Running an HSD Fullnode for solo mining

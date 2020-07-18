@@ -1468,15 +1468,32 @@ class HandyMiner {
   listAsics(){
     //list asics
     let asics = [];
+    let hasPolled;
+    let pollCount;
+    let foundAsics;
     SerialPort.list().then( ports => {
-      let hasPolled = 0;
+      hasPolled = 0;
       let pollCount = ports.length;
-      let foundAsics = [];
+      //if(process.platform.indexOf('linux') >= 0){
+      ports = ports.filter(port=>{
+        if(!port.manufacturer){
+          return false;
+        }
+        if(port.manufacturer.toLowerCase().indexOf('stmicroelectronics') == -1){
+          return false;
+        }
+        return true;
+      });
+      pollCount = ports.length;
+      //}
+
+      foundAsics = [];
       if(ports.length == 0){
         //no ports found
         this.finishCheck(hasPolled,pollCount,asics);
       }
       ports.map(port=>{
+        
         let p = port.path;
         let conn = new SerialPort(p,{autoOpen:true},err=>{
           if(err){
@@ -1501,8 +1518,8 @@ class HandyMiner {
         })
         conn.on('data',data=>{
           hasPolled++;
+          
           if(data[3] == 0x54){
-
             let asicInfo = this.goldShellParser.parseASICDeviceInfo(data,p);
             asics.push(asicInfo);
           }

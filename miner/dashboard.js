@@ -36,12 +36,12 @@ class CLIDashboard{
 			}
 			else{
 				const configurator = new Configurator();
-				configurator.configure(()=>{
+				configurator.configure().then(()=>{
 					this.config = JSON.parse(fs.readFileSync(__dirname+'/../goldshell.json','utf8'));
 					this.startMiner();
 					this.initBlessed();
-
-				});
+					
+				}).catch(e=>{});
 			}		
 		});
 		
@@ -141,7 +141,7 @@ class CLIDashboard{
 		if(typeof this.asics == "undefined") return;
 		Object.keys(this.asics).map(k=>{
 			let asic = this.asics[k];
-			let name = asic.info.serialPort+'.'+asic.info.modelName;
+			let name = asic.info.serialPort.replace('/dev/','')+'.'+asic.info.modelName;
 			let data = [];
 			let last = 0;
 			let mData = asic.data.asicCoreClock;
@@ -164,7 +164,7 @@ class CLIDashboard{
 		if(typeof this.asics == "undefined") return;
 		Object.keys(this.asics).map(k=>{
 			let asic = this.asics[k];
-			let name = asic.info.serialPort+'.'+asic.info.modelName;
+			let name = asic.info.serialPort.replace('/dev/','')+'.'+asic.info.modelName;
 			let data = [];
 			let last = 0;
 
@@ -261,7 +261,7 @@ class CLIDashboard{
 	    }
 	    Object.keys(this.asics).map(asicKey=>{
 	    	let asicData = this.asics[asicKey];
-	    	let name = asicData.info.serialPort+'.'+asicData.info.modelName;
+	    	let name = asicData.info.serialPort.replace('/dev/','')+'.'+asicData.info.modelName;
 	    	let tempData = asicData.data.temperature;
 	    	let xData = [];
 		    let yData = [];
@@ -461,7 +461,7 @@ class CLIDashboard{
 					
 					this.asics[platform].data.hashrate.push({hashrate:hr,time:moment().format('HH:mm')});
 					this.asics[platform].data.hashrate120.push({hashrate:hr120,time:moment().format('HH:mm')});
-					this.actuallyLog('ASIC '+gpuID+'.'+modelName+': \x1b[36m'+(numeral(hr).format('0.00'))+'GH AVG: '+(numeral(hr120).format('0.00'))+'GH\x1b[0m');
+					this.actuallyLog('ASIC '+gpuID.replace('/dev/','')+'.'+modelName+': \x1b[36m'+(numeral(hr).format('0.00'))+'GH AVG: '+(numeral(hr120).format('0.00'))+'GH\x1b[0m');
 					this.drawHashrate();
 					this.updateAsicStats(json);
 					
@@ -497,7 +497,7 @@ class CLIDashboard{
 	    
 	    Object.keys(this.asics).map(asicKey=>{
 	    	let asicData = this.asics[asicKey];
-	    	let name = asicData.info.serialPort+'.'+asicData.info.modelName;
+	    	let name = asicData.info.serialPort.replace('/dev/','')+'.'+asicData.info.modelName;
 	    	let hashData = asicData.data.hashrate;
 	    	let hd120 = asicData.data.hashrate120;
 	    	let xData = [];
@@ -636,7 +636,7 @@ class CLIDashboard{
     let tempSeriesData = [];
     Object.keys(asicSet).map(asicKey=>{
     	let asicData = asicSet[asicKey];
-    	let name = asicData.info.serialPort+'.'+asicData.info.modelName;
+    	let name = asicData.info.serialPort.replace('/dev/','')+'.'+asicData.info.modelName;
     	
     	let xData = [];
 	    let yData = [];
@@ -732,7 +732,7 @@ class CLIDashboard{
 	  let memSpeedDatas = [];
 	  Object.keys(this.asics).map(k=>{
 	  	let asic = this.asics[k];
-	  	let name = asic.info.serialPort+'.'+asic.info.modelName;
+	  	let name = asic.info.serialPort.replace('/dev/','')+'.'+asic.info.modelName;
 	  	let data = [];
 	  	let last;
 	  	for(let i=0;i<100;i++){
@@ -749,7 +749,7 @@ class CLIDashboard{
 	  let asicSpeedDatas = [];
 	  Object.keys(this.asics).map(k=>{
 	  	let asic = this.asics[k];
-	  	let name = asic.info.serialPort+'.'+asic.info.modelName;
+	  	let name = asic.info.serialPort.replace('/dev/','')+'.'+asic.info.modelName;
 	  	let data = [];
 	  	let last;
 	  	for(let i=0;i<100;i++){
@@ -766,7 +766,7 @@ class CLIDashboard{
 	  let voltageSpeedDatas = [];
 	  Object.keys(this.asics).map(k=>{
 	  	let asic = this.asics[k];
-	  	let name = asic.info.serialPort+'.'+asic.info.modelName;
+	  	let name = asic.info.serialPort.replace('/dev/','')+'.'+asic.info.modelName;
 	  	let data = [];
 	  	let last;
 	  	for(let i=0;i<100;i++){
