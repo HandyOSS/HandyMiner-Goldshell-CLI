@@ -1,15 +1,21 @@
 <img src="https://raw.githubusercontent.com/HandyMiner/HandyGuide/72303a89968942dc945e05588db5db2a6610c539/logo/cobra.svg" width="150" height="150" />
 
 **HandyMiner-Goldshell-CLI**
+
 Copyright 2020 HandyMiner
+
 Copyright 2020 Alex Smith - alex.smith@earthlab.tech
+
 Copyright 2020 Steven McKie - mckie@amentum.org 
+
 Copyright 2020 Thomas Costanzo - stanzo89@gmail.com
+
 [LICENSE](./LICENSE)
 
 ### [🐍HandyMiner Quick Start Guide🐍](https://handyminer.github.io/HandyMiner-Goldshell-CLI/)
 
 **HandyMiner Team Donation Address (HNS): ```hs1qwfpd5ukdwdew7tn7vdgtk0luglgckp3klj44f8```**
+
 **HandyMiner Team Donation Address (BTC): ```bc1qk3rk4kgek0hzpgs8qj4yej9j5fs7kcnjk7kuvt```**
 
 **Quick Links**
@@ -184,14 +190,17 @@ Note the miner will default to config.json without this argument.
 ## Mining FAQ:
 
 1. I started the dashboard and it says connection to 127.0.0.1 is timed out and trying again in 20s. 
+
 This means your fullnode is not running. Please [launch a fullnode](#runFullnode)  or mine to a pool IP address.
 
 2. No ASICs were detected.
+
 Ensure the blue LED next to the USB port on the HS1 is solid blue. If so, and you're windows, [Download STM32 Virtual COM PORT driver from Goldshell](https://github.com/goldshellminer/HS1/tree/master/miner/serial_driver) so that the ASIC can be detected
 
 3. We do not auto-start the fullnode for you here like we do in HandyMiner-GUI. However we made it easy here and its a [double click to start it](#runFullnode). 
 
 4. Windows may also need to add the following two items added to the ```Path``` environment variable:
+
 ```
 C:\Program Files\nodejs\node_modules\npm\bin
 ```
