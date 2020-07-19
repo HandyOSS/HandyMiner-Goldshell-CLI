@@ -5,7 +5,6 @@ Install node.js 10.x and deps
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo apt-get install node-gyp
-sudo apt install libunbound-dev
 sudo apt install alsa-utils
 ```
 
