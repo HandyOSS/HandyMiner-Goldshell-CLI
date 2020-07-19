@@ -1,12 +1,16 @@
 <img src="https://raw.githubusercontent.com/HandyMiner/HandyGuide/72303a89968942dc945e05588db5db2a6610c539/logo/cobra.svg" width="150" height="150" />
 
-HANDYMINER
-2020 Alex Smith <alex.smith@earthlab.tech>
+**HandyMiner-Goldshell-CLI**
+Copyright 2020 HandyMiner
+Copyright 2020 Alex Smith - alex.smith@earthlab.tech
+Copyright 2020 Steven McKie - mckie@amentum.org 
+Copyright 2020 Thomas Costanzo - stanzo89@gmail.com
+[LICENSE](./LICENSE)
 
 ### [🐍HandyMiner Quick Start Guide🐍](https://handyminer.github.io/HandyMiner-Goldshell-CLI/)
 
-**HandyMiner Team Donation Address (HNS): hs1qwfpd5ukdwdew7tn7vdgtk0luglgckp3klj44f8**
-**HandyMiner Team Donation Address (BTC): bc1qk3rk4kgek0hzpgs8qj4yej9j5fs7kcnjk7kuvt**
+**HandyMiner Team Donation Address (HNS): ```hs1qwfpd5ukdwdew7tn7vdgtk0luglgckp3klj44f8```**
+**HandyMiner Team Donation Address (BTC): ```bc1qk3rk4kgek0hzpgs8qj4yej9j5fs7kcnjk7kuvt```**
 
 **Quick Links**
 - [Download Latest from Releases](https://github.com/HandyMiner/HandyMiner-Goldshell-CLI/releases)
@@ -263,11 +267,3 @@ and pay attention that the passwords are inside that double quote ^^
 EPIC Thanks to chjj and the entire Handshake Project
 
 EPIC Thanks to Steven McKie for being my mentor/believing in me
-
-
-Copyright 2020 HandyMiner
-Copyright 2020 Alex Smith - alex.smith@earthlab.tech
-Copyright 2020 Steven McKie - mckie@amentum.org 
-Copyright 2020 Thomas Costanzo - stanzo89@gmail.com
-
-[LICENSE](./LICENSE)
