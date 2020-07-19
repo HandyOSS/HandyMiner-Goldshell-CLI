@@ -2,16 +2,6 @@
 
 **HandyMiner-Goldshell-CLI**
 
-Copyright 2020 HandyMiner
-
-Copyright 2020 Alex Smith - alex.smith@earthlab.tech
-
-Copyright 2020 Steven McKie - mckie@amentum.org 
-
-Copyright 2020 Thomas Costanzo - stanzo89@gmail.com
-
-[LICENSE](./LICENSE)
-
 ### [🐍HandyMiner Quick Start Guide🐍](https://handyminer.github.io/HandyMiner-Goldshell-CLI/)
 
 **HandyMiner Team Donation Address (HNS): ```hs1qwfpd5ukdwdew7tn7vdgtk0luglgckp3klj44f8```**
@@ -276,3 +266,16 @@ and pay attention that the passwords are inside that double quote ^^
 EPIC Thanks to chjj and the entire Handshake Project
 
 EPIC Thanks to Steven McKie for being my mentor/believing in me
+
+EPIC Thanks to the Goldshell team for making innovative hardware
+
+
+Copyright 2020 HandyMiner
+
+Copyright 2020 Alex Smith - alex.smith@earthlab.tech
+
+Copyright 2020 Steven McKie - mckie@amentum.org 
+
+Copyright 2020 Thomas Costanzo - stanzo89@gmail.com
+
+[LICENSE](./LICENSE)
