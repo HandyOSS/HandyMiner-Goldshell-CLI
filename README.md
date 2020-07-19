@@ -111,10 +111,10 @@ The first time you run the miner, you will run through a configurator which will
 Required items to have ready for configuration:
 
 0. Host or IP address of the pool or solo node you mine to (127.0.0.1 for your local fullnode)
-
+1. (Pool mining) Your wallet or registered pool username
 Optional configuration items (just leave blank and hit enter if you dont know) :
-1. Pool or solo node port (probably 3008)
-2. The stratum password (optional)
+2. Pool or solo node port (probably 3008)
+3. The stratum password (optional)
 
 <a id="poolParameters"></a>
 ## POOL SETTINGS
@@ -124,7 +124,7 @@ Optional configuration items (just leave blank and hit enter if you dont know) :
 **stratum host**: hns.ss.dxpool.com
 **stratum port**: 3008
 
-**username**: registered_username.rigName
+**username**: registered_username.workerName
 **password**: anything
 
 #### F2POOL
@@ -175,17 +175,6 @@ Note the miner will default to config.json without this argument.
 
 **ASIC per Config**: If you are using multiple configs, you may want to group multiple Goldshell HS1's as you see fit. Within ```goldshell.json``` the line ```asics:"-1"``` can change to: ```asics:"COM1,COM2"```. basically the COM* values are the ports displayed initially when you start the miner with ```node mine.js```
 
-<a id="hangryInfo"></a>
-**Hangry Mode Update 3/6/2020**::
-We released Hangry Mode for Vega56/64 and AMD 5700s. Hangry Mode is enabled by default for Vega 56/64, but can only be enabled for the AMD 5700 as an option (for an extra 25MH bump). Hangry Mode is more-or-less stable for 5700 but can use more power. If you are close to capacity on your PSU it will probably fall over. To enable Hangry Mode for AMD5700:: 
-1. You can remove your config.json and run ```node configure.js``` to auto-generate your config.json file with hangry mode enabled, or 
-2. add the following line to the end of your existing config.json like::
-```
-...
-"poolDifficulty": -1,
-"muteWinningFanfare": false,
-"enableHangryMode": true
-```
 
 <a id="faq"></a>
 ## Mining FAQ:
@@ -193,8 +182,8 @@ We released Hangry Mode for Vega56/64 and AMD 5700s. Hangry Mode is enabled by d
 1. I started the dashboard and it says connection to 127.0.0.1 is timed out and trying again in 20s. 
 This means your fullnode is not running. Please [launch a fullnode](#runFullnode)  or mine to a pool IP address.
 
-2. I dont see all my GPUs listed in the configurator
-Use your arrow keys, the list is scrollable. Hit space to multi-select and Enter to goto the next step. Also ensure that you're updated to the latest version AMD/Nvidia drivers, as older versions may not be recognized.
+2. No ASICs were detected.
+Ensure the blue LED next to the USB port on the HS1 is solid blue. If so, and you're windows, [Download STM32 Virtual COM PORT driver from Goldshell](https://github.com/goldshellminer/HS1/tree/master/miner/serial_driver) so that the ASIC can be detected
 
 3. We do not auto-start the fullnode for you here like we do in HandyMiner-GUI. However we made it easy here and its a [double click to start it](#runFullnode). 
 
@@ -274,3 +263,11 @@ and pay attention that the passwords are inside that double quote ^^
 EPIC Thanks to chjj and the entire Handshake Project
 
 EPIC Thanks to Steven McKie for being my mentor/believing in me
+
+
+Copyright 2020 HandyMiner
+Copyright 2020 Alex Smith - alex.smith@earthlab.tech
+Copyright 2020 Steven McKie - mckie@amentum.org 
+Copyright 2020 Thomas Costanzo - stanzo89@gmail.com
+
+[LICENSE](./LICENSE)
