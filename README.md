@@ -216,7 +216,7 @@ If you dont want to run as sudo, you can modify your permissions to the ASIC dev
 Notice the serial address in the error ^^ : ```/dev/ttyACM0```
 On the terminal, we will need to add your user to the group that owns the serial device, then restart the Linux machine.
 
-##### To get the device group owner: 
+##### To add your user to the device group for access: 
 ##### the easy way: ```sudo ./linux_grant_serial_permissions.sh```, and then restart the linux machine.
 ##### or the less easier way: 
 0. Run the command with the device ID listed in the error, like:
