@@ -39,15 +39,16 @@ to communicate with Handshake HSD via Stratum Mining.
 <a id="buildInstructions"></a>
 ## PREREQUISITES
 
-[Node.js](https://nodejs.org) v10.4 - v11+-ish (whatever one has bigint support)
+[Node.js](https://nodejs.org) v10.4 and above (whatever one has bigint support)
 
 (**Windows Users**) [Git Bash](https://git-scm.com/downloads) A handy bash terminal, **install in Program Files/Git**
 
 (**Windows Users**) [Download STM32 Virtual COM PORT driver from Goldshell](https://github.com/goldshellminer/HS1/tree/master/miner/serial_driver) OR [Download STM32 Virtual COM PORT driver from STMicroelectronics](https://www.st.com/en/development-tools/stsw-stm32102.html)
 
+Linux: Dependencies install can be found in [./linux_installation.md](./linux_installation.md)
+
 (optional) [Docker](#dockerReminders) if you want to run your own fullnode to mine to with the provided utilities
 
-Linux: Dependencies install can be found in [./linux_installation.md](./linux_installation.md)
 
 
 ## INSTALLATION
@@ -94,8 +95,9 @@ Note: many windows terminals dont do text coloring or dashboards right with npm 
 
 node --max-old-space-size=8196 ./miner/dashboard.js
 ```
-####Linux Users:
-To have this app talk to the goldshell serial devices out of the box, you'll have to run with sudo. To Grant permissions to your user to talk to the devices without sudo, perform the steps in the [Linux FAQ](#linuxFAQ)
+#### Linux Users note:
+
+To have this app talk to the goldshell serial devices out of the box, you'll have to run with ```sudo```. To grant permissions to your user to talk to the devices without sudo, perform the steps in the [Linux FAQ](#linuxFAQ)
 
 #### Mine blocks!
 
@@ -204,14 +206,19 @@ C:\Program Files\nodejs\node_modules\npm\bin
 
 #### Linux FAQ
 
-If you try to mine out of the box without ```sudo``` you will see an error like:
-```asic connection error:: [Error: Error: Permission denied, cannot open /dev/ttyACM0]
+If you try to mine out of the box without ```sudo``` you will see an error that looks like:
 ```
+asic connection error:: [Error: Error: Permission denied, cannot open /dev/ttyACM0]
+```
+
 If you dont want to run as sudo, you can modify your permissions to the ASIC device like so:
 
-0. Notice the serial address in the errror: ```/dev/ttyACM0```
-1. On the terminal, we will need to add your user to the group that owns the serial device, then restart the Linux machine.
-Get device group owner: 
+Notice the serial address in the error ^^ : ```/dev/ttyACM0```
+On the terminal, we will need to add your user to the group that owns the serial device, then restart the Linux machine.
+
+##### To get the device group owner: 
+##### the easy way: ```sudo ./linux_grant_serial_permissions.sh```, and then restart the linux machine.
+##### or the less easier way: 
 0. Run the command with the device ID listed in the error, like:
 ```ls -la /dev/ttyACM0```
 It will output something like:
