@@ -24,8 +24,6 @@
 [HandshakeTalk Telegram](https://t.me/handshaketalk); [Handshake Mining/HNS Discord](https://discord.gg/VMUneym)
 
 
-
-
 A simple CLI interface for HSD Mining with the Goldshell HS1
 to communicate with Handshake HSD via Stratum Mining. 
 # Easy Installation
@@ -50,26 +48,24 @@ Linux: Dependencies install can be found in [./linux_installation.md](./linux_in
 (optional) [Docker](#dockerReminders) if you want to run your own fullnode to mine to with the provided utilities
 
 
-
 ## INSTALLATION
 
-#### Download & Install the Prebuilt ZIP :
+#### Clone this repo or Download & Install as ZIP :
 
 [Download Latest from Releases](https://github.com/HandyMiner/HandyMiner-Goldshell-CLI/releases)
 
 **Note: un-zipping the full contents may take a bit.**
 
-#### OR BUILD YOURSELF 
-
-#### Build on the Command Line (mac/linux/windows) :
+#### Install Dependencies (mac/linux/windows) :
 
 ```npm install``` in this directory or 
 
-#### Windows (non-prebuilt only install) : 
+#### Windows Double-click install dependencies : 
 
-double-click ```install.windows.bat``` (and make sure to run this as administrator). Windows: This will probably take 10 minutes to build.
+double-click ```install.windows.bat```.
 
-Windows folks: If you didnt double click ```install.windows.bat``` youll need to run the following commands in the repo root: 
+Windows folks: If you didnt double click ```install.windows.bat``` youll need to run the following command in the repo root: 
+
 ```npm install```
 
 <a id="running"></a>
@@ -93,7 +89,7 @@ OR
 
 Note: many windows terminals dont do text coloring or dashboards right with npm run commands.. So if it's an issue (and you didnt double click) you can launch the proper dashboard like:
 
-node --max-old-space-size=8196 ./miner/dashboard.js
+node ./miner/dashboard.js
 ```
 #### Linux Users note:
 
@@ -111,8 +107,10 @@ The first time you run the miner, you will run through a configurator which will
 Required items to have ready for configuration:
 
 0. Host or IP address of the pool or solo node you mine to (127.0.0.1 for your local fullnode)
-1. (Pool mining) Your wallet or registered pool username
+1. (Pool mining) Your wallet address or registered pool username
+
 Optional configuration items (just leave blank and hit enter if you dont know) :
+
 2. Pool or solo node port (probably 3008)
 3. The stratum password (optional)
 
@@ -185,9 +183,9 @@ This means your fullnode is not running. Please [launch a fullnode](#runFullnode
 
 2. No ASICs were detected.
 
-Ensure the blue LED next to the USB port on the HS1 is solid blue. If so, and you're windows, [Download STM32 Virtual COM PORT driver from Goldshell](https://github.com/goldshellminer/HS1/tree/master/miner/serial_driver) so that the ASIC can be detected
+Ensure the blue LED next to the USB port on the HS1 is solid blue. If so, and you're in Windows, [Download STM32 Virtual COM PORT driver from Goldshell](https://github.com/goldshellminer/HS1/tree/master/miner/serial_driver) so that the ASIC can be detected
 
-3. We do not auto-start the fullnode for you here like we do in HandyMiner-GUI. However we made it easy here and its a [double click to start it](#runFullnode). 
+3. Solo miners: We do not auto-start the fullnode for you here like we do in HandyMiner-GUI. However we made it easy here and its a [double click to start it](#runFullnode). 
 
 4. Windows may also need to add the following two items added to the ```Path``` environment variable:
 
