@@ -2,7 +2,7 @@
 
 **HandyMiner-Goldshell-CLI**
 
-### [🐍HandyMiner-Goldshell-CLI Quick Start Guide🐍](https://handyminer.github.io/HandyMiner-Goldshell-CLI/)
+### [HandyMiner-Goldshell-CLI Quick Start Guide](https://handyminer.github.io/HandyMiner-Goldshell-CLI/)
 
 **HandyMiner Team Donation Address (HNS): ```hs1qwfpd5ukdwdew7tn7vdgtk0luglgckp3klj44f8```**
 
@@ -21,10 +21,10 @@
 
 **HandyMiner Social Channels:**
 
-[HandshakeTalk Telegram](https://t.me/handshaketalk); [Handshake Mining/HNS Discord](https://discord.gg/VMUneym)
+[HandshakeTalk Telegram](https://t.me/handshaketalk); [HandyMiner Support](https://discord.gg/VMUneym)
 
 
-A simple CLI interface for HSD Mining with the Goldshell HS1
+Description: A simple CLI interface (+optional Dashboard) for HSD Mining to enable the Goldshell HS1
 to communicate with Handshake HSD via Stratum Mining. 
 # Easy Installation
        Easily installed within minutes.
@@ -45,24 +45,24 @@ to communicate with Handshake HSD via Stratum Mining.
 
 Linux: Dependencies install can be found in [./linux_installation.md](./linux_installation.md)
 
-(optional) [Docker](#dockerReminders) if you want to run your own fullnode to mine to with the provided utilities
+(Optional) [Docker](#dockerReminders) if you want to run your own fullnode to mine to with the provided utilities.
 
 
 ## INSTALLATION
 
-#### Clone this repo or Download & Install as ZIP :
+#### > Clone this repo or Download & Install as ZIP :
 
 [Download Latest from Releases](https://github.com/HandyMiner/HandyMiner-Goldshell-CLI/releases)
 
 **Note: un-zipping the full contents may take a bit.**
 
-#### Install Dependencies (mac/linux/windows) :
+#### > Install Dependencies (mac/linux/windows) :
 
 ```npm install``` in this directory or 
 
-#### Windows Double-click install dependencies : 
+#### > Windows Double-click install dependencies : 
 
-double-click ```install.windows.bat```.
+Double-click ```install.windows.bat```.
 
 Windows folks: If you didnt double click ```install.windows.bat``` youll need to run the following command in the repo root: 
 
@@ -221,7 +221,7 @@ Which in our case, the group is ```dialout```
 <a id="runFullnode"></a>
 ### Running an HSD Fullnode for solo mining
 
-There are some handy docker utilities in the folder ```./fullnode_utils``` which you can double click on mac/windows/linux to create, launch, stop or nuke a stratum-enabled fullnode on your local machine that you can mine to. Any utilities specific to the network (main|testnet|simnet) are noted in the command names. 
+There are some handy docker utilities in the folder ```./fullnode_utils``` which you can double click on Mac/Windows/Linux to create, launch, stop or nuke a stratum-enabled fullnode on your local machine that you can mine to. Any utilities specific to the network (main|testnet|simnet) are noted in the command names. 
 
 <a id="dockerReminders"></a>
 #### Docker Fullnode Reminders:
