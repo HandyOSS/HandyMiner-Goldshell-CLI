@@ -1760,7 +1760,7 @@ class HandyMiner {
         this.handleStratumReconnect();
       }
       delete this.redundant;
-      this.generateWork(); //until the next iteration
+      this.notifyWorkers(); //until the next iteration
     },1000*dS)
   }
   toDifficulty(bits) {
