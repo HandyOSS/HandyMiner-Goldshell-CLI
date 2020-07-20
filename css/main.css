@@ -147,10 +147,44 @@ a{
   bottom: -30px;
   right: 0px;
   text-align:right;
+  width: 100%;
 }
 .donate img{
   width:100px;
   height:100px;
+}
+.donate img#hns{
+  float:right;
+  
+}
+.donate img#btc{
+  float:left;
+  
+}
+.addressWrap{
+  width:100%;
+}
+.donate .hns .addressWrap{
+  float:right;
+}
+.donate .btc .addressWrap{
+  float:left;
+}
+.donate .btc input{
+  text-align:left;
+}
+.donate .hns input{
+  text-align: right;
+}
+.donate .address{
+  float:left;
+  width:50%;
+}
+.donate .address.btc{
+  text-align:left;
+}
+.donate .address.hns{
+  text-align:right;
 }
 
 #languageSelector{
