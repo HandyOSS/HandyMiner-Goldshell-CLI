@@ -32,7 +32,7 @@ to communicate with Handshake HSD via Stratum Mining.
 
 ### HandyMiner Running with Dashboard Enabled
 
-![Imgur](https://i.imgur.com/0Y3Q5UZ.jpg)
+![Imgur](https://i.imgur.com/qwbNden.jpg)
 
 <a id="buildInstructions"></a>
 ## PREREQUISITES
