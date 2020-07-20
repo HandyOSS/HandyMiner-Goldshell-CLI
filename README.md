@@ -2,7 +2,7 @@
 
 **HandyMiner-Goldshell-CLI**
 
-### [🐍HandyMiner Quick Start Guide🐍](https://handyminer.github.io/HandyMiner-Goldshell-CLI/)
+### [🐍HandyMiner-Goldshell-CLI Quick Start Guide🐍](https://handyminer.github.io/HandyMiner-Goldshell-CLI/)
 
 **HandyMiner Team Donation Address (HNS): ```hs1qwfpd5ukdwdew7tn7vdgtk0luglgckp3klj44f8```**
 
@@ -97,7 +97,7 @@ node --max-old-space-size=8196 ./miner/dashboard.js
 ```
 #### Linux Users note:
 
-To have this app talk to the goldshell serial devices out of the box, you'll have to run with ```sudo```. To grant permissions to your user to talk to the devices without sudo, perform the steps in the [Linux FAQ](#linuxFAQ)
+To have this app talk to the goldshell serial devices out of the box, you may have to run with ```sudo``` (we did in ubuntu, but not raspi). If you run ```node mine.js``` and run into errors: To grant permissions to your user to talk to the devices without sudo, perform the steps in the [Linux FAQ](#linuxFAQ)
 
 #### Mine blocks!
 
@@ -198,7 +198,7 @@ C:\Program Files\nodejs\node_modules\npm\bin
 
 #### Linux FAQ
 
-If you try to mine out of the box without ```sudo``` you will see an error that looks like:
+If you try to mine out of the box without ```sudo``` you may see an error that looks like:
 ```
 asic connection error:: [Error: Error: Permission denied, cannot open /dev/ttyACM0]
 ```
@@ -217,7 +217,7 @@ It will output something like:
 ```crw-rw---- 1 root dialout 166, 0 Jul 18 18:06 /dev/ttyACM0```
 Which in our case, the group is ```dialout```
 1. To add your username to the dialout group:
-```sudo useradd -a -G dialout $USER```
+```sudo useradd -G dialout $USER```
 2. Now restart the computer and voila, you can now mine without sudo!
 
 <a id="runFullnode"></a>
