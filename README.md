@@ -136,22 +136,6 @@ registered:
 **username**: username.workerName
 **password**: anything
 
-#### 6block
-
-**stratum host**: handshake.6block.com
-**stratum_port**: 7701
-
-**username**: username.workerName
-**password**: anything
-
-#### PoolFlare
-
-**stratum host**: hns-us.ss.poolflare.com
-**stratum_port**: 3355
-
-**username**: wallet.workerName
-**password**: anything
-
 #### hnspool
 
 **stratum host**: stratum-us.hnspool.com
