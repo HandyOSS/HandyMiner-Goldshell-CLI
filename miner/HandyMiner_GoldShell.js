@@ -146,6 +146,8 @@ class HandyMiner {
     this.asicStats = {};
     this.asicShares = {};
     this.asicWorkQueueNext = {};
+    this.asicInfoLookupIntervals = {};
+    this.hasDisplayedZeroAsicMessage = false;
     this.gpuNames = {};
     this.lastGPUHashrate = {};
     if(process.argv[2] == '-1'){
@@ -258,7 +260,6 @@ class HandyMiner {
     this.initListeners();
 	}
   startAvgHashrateReporter(){
-
     if(typeof this.lastASICReporterTimeout != "undefined"){
       clearTimeout(this.lastASICReporterTimeout);
     }
@@ -329,20 +330,7 @@ class HandyMiner {
       }
 
 
-      //kill connection when we kill the script.
-      //stratum TODO: gracefully handle messy deaths/disconnects from clients else it kills hsd atm.
       
-      exitHook((callback)=>{
-        this.killHandyMiner(callback);
-      })
-      process.stdin.on('data', data => {
-        //from dashboard.js, exitHook wont catch so we use stdin..
-        if(data.toString('utf8') == 'dashboard sigint'){
-          this.killHandyMiner().then(()=>{
-            process.exit(0);
-          })
-        }
-      })
       //process.stdin.setRawMode(true);
     });
     let ongoingResp = '';
@@ -1169,6 +1157,7 @@ class HandyMiner {
             });
 
           },20000);
+          this.asicInfoLookupIntervals[asicID] = sI;
         }
         else{
           //TODO:::
@@ -1316,7 +1305,6 @@ class HandyMiner {
     let perWorkerRateAvg = {};
     let perAsicRateNow = {};
     let perAsicRateAvg = {};
-
     Object.keys(this.asicWorkers).map(asicID=>{
       perAsicRateNow[asicID] = 0;
       perAsicRateAvg[asicID] = 0;
@@ -1333,6 +1321,15 @@ class HandyMiner {
         let hourlyAvg = this.asicJobHashrates[asicID+'_'+workerID].last200Rates.reduce((a,b)=>{
           return a+b;
         })/this.asicJobHashrates[asicID+'_'+workerID].last200Rates.length;
+        
+        //dont display negative #s
+        if(hourlyAvg < 0){
+          hourlyAvg = 0;
+        }
+        if(hashRatePerSecond < 0){
+          hashRatePerSecond = 0;
+        }
+
         perAsicRateAvg[asicID] += hourlyAvg;
         perAsicRateNow[asicID] += hashRatePerSecond;
 
@@ -1391,6 +1388,9 @@ class HandyMiner {
     
     this.asicWorkQueueNext[asicID] = workerID+1;
     let serialConn = this.asicWorkers[asicID];
+    if(typeof serialConn == "undefined"){
+      return;
+    }
     //console.log('early on header time is',work.work.header.slice(4,12).toString('hex'));
     
     let tgt = work.work.target.slice(0,8).reverse().toString('hex').slice(0,16).toUpperCase() ;
@@ -1455,6 +1455,41 @@ class HandyMiner {
         this.handleAsicMessage(data,asicID);
         
       })
+      conn.on('close',data=>{
+        //was disconnected
+        
+        delete this.asicWorkers[asicID];
+        delete this.asicNames[asicID];
+        if(this.asics.indexOf(asicID) >= 0){
+          let asicList = this.asics.split(',');
+          asicList = asicList.filter(id=>{
+            return id != asicID;
+          });
+          if(asicList.length == 0){
+            this.asics = '-1';
+          }
+          else{
+            this.asics = asicList.join(',');
+          }
+        }
+        if(typeof this.asicInfoLookupIntervals[asicID] != "undefined"){
+          clearInterval(this.asicInfoLookupIntervals[asicID]);
+          delete this.asicInfoLookupIntervals[asicID];
+        }
+        this.startAvgHashrateReporter();
+        if(process.env.HANDYRAW){
+          //log error
+          let errData = {
+            data:{},
+            message:'HS1 ['+asicID+'] WAS DISCONNECTED',
+            type:'error'
+          };
+          process.stdout.write(JSON.stringify(errData)+'\n')
+        }
+        else{
+          console.log('\x1b[31mERROR: HS1 ['+asicID+'] WAS DISCONNECTED\x1b[0m')
+        }
+      })
     }
     else{
       
@@ -1462,8 +1497,12 @@ class HandyMiner {
 
     }
     
-
-
+  }
+  listenForNewHardware(){
+    setTimeout(()=>{
+      this.listAsics();  
+      this.listenForNewHardware();  
+    },2000);
   }
   listAsics(){
     //list asics
@@ -1488,10 +1527,14 @@ class HandyMiner {
       //}
 
       foundAsics = [];
-      if(ports.length == 0){
+      if(ports.length == 0 && Object.keys(this.asicNames).length == 0 && !this.hasDisplayedZeroAsicMessage){
         //no ports found
         this.finishCheck(hasPolled,pollCount,asics);
       }
+      ports = ports.filter(p=>{
+        return Object.keys(this.asicNames).indexOf(p.path) == -1;
+      });
+      
       ports.map(port=>{
         
         let p = port.path;
@@ -1547,6 +1590,7 @@ class HandyMiner {
       return;
     }
     if(asics.length == 0){
+      this.hasDisplayedZeroAsicMessage = true;
       if(process.env.HANDYRAW){
         let regResp = {
           data:[],
@@ -1557,10 +1601,10 @@ class HandyMiner {
       else{
         console.log('\x1b[31mERROR: NO GOLDSHELL HS1 FOUND\x1b[0m') 
         console.log('PLEASE VERIFY THE USB IS PLUGGED IN AND THE ASIC HAS AC POWER')
-        console.log('SEE https://github.com/HandyMiner/HandyMiner-GoldShell-CLI/ for troubleshooting') 
+        //console.log('SEE https://github.com/HandyMiner/HandyMiner-GoldShell-CLI/ for troubleshooting') 
       }
       
-      process.exit(0);
+      //process.exit(0);
     }
     else{
       if(process.env.HANDYRAW){
@@ -1582,6 +1626,10 @@ class HandyMiner {
       this.asics.split(',').map(s=>{return s.trim();}).map((asicID,asicI)=>{
         this.spawnASICWorker(asicID,asicI);
       });
+      setTimeout(()=>{
+        //after init, give it a few seconds to init the hashrate display
+        this.tickHashrateDisplay();
+      },3000);
       this.startAvgHashrateReporter();
       
       //process.exit(0);
@@ -1675,7 +1723,19 @@ class HandyMiner {
         fs.writeFileSync(process.env.HOME+'/.HandyMiner/version.txt',mTarget);
       }
     }
-
+    this.listenForNewHardware();
+    //exit hooks to fire only once
+    exitHook((callback)=>{
+      this.killHandyMiner(callback);
+    })
+    process.stdin.on('data', data => {
+      //from dashboard.js, exitHook wont catch so we use stdin..
+      if(data.toString('utf8') == 'dashboard sigint'){
+        this.killHandyMiner().then(()=>{
+          process.exit(0);
+        })
+      }
+    })
 
     this.isMGoing = false;
     if(typeof this.mCheck != "undefined"){
