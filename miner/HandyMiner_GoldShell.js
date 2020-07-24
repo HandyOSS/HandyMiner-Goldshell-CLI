@@ -433,6 +433,9 @@ class HandyMiner {
     let p = new Promise((resolve,reject)=>{
       let complete = 0;
       let len = Object.keys(this.asicWorkers).length;
+      if(len == 0){
+        resolve();
+      }
       Object.keys(this.asicWorkers).map(workerID=>{
         let resetDeviceParamsBuffer = new Buffer.from('A53C96A21010000000A200000000040000004169C35A','hex');
         this.asicWorkers[workerID].write(resetDeviceParamsBuffer,err=>{
@@ -1476,18 +1479,20 @@ class HandyMiner {
           clearInterval(this.asicInfoLookupIntervals[asicID]);
           delete this.asicInfoLookupIntervals[asicID];
         }
-        this.startAvgHashrateReporter();
-        if(process.env.HANDYRAW){
-          //log error
-          let errData = {
-            data:{},
-            message:'HS1 ['+asicID+'] WAS DISCONNECTED',
-            type:'error'
-          };
-          process.stdout.write(JSON.stringify(errData)+'\n')
-        }
-        else{
-          console.log('\x1b[31mERROR: HS1 ['+asicID+'] WAS DISCONNECTED\x1b[0m')
+        if(!this.isKilling){
+          this.startAvgHashrateReporter();
+          if(process.env.HANDYRAW){
+            //log error
+            let errData = {
+              data:{},
+              message:'HS1 ['+asicID+'] WAS DISCONNECTED',
+              type:'error'
+            };
+            process.stdout.write(JSON.stringify(errData)+'\n')
+          }
+          else{
+            console.log('\x1b[31mERROR: HS1 ['+asicID+'] WAS DISCONNECTED\x1b[0m')
+          }
         }
       })
     }
