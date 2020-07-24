@@ -1484,7 +1484,8 @@ class HandyMiner {
           if(process.env.HANDYRAW){
             //log error
             let errData = {
-              data:{},
+              data:{asicID:asicID},
+              disconnected:true,
               message:'HS1 ['+asicID+'] WAS DISCONNECTED',
               type:'error'
             };
