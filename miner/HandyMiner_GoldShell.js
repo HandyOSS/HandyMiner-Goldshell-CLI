@@ -1007,7 +1007,7 @@ class HandyMiner {
     let version;
     let bits;
     let time;
-    
+    let poolSupportsMask = false;
     if(this.IS_HNSPOOLSTRATUM && !this.isMGoing){
       //support HNSPOOL response format
       reservedRoot = response.params[3]; //these are prob all zeroes rn but here for future use
@@ -1017,7 +1017,7 @@ class HandyMiner {
       version = response.params[7];
       bits = response.params[8];
       time = response.params[9];
-
+      poolSupportsMask = true;
     }
     else{
       witnessRoot = response.params[3];
@@ -1059,6 +1059,12 @@ class HandyMiner {
 
     if(this.IS_HNSPOOLSTRATUM && !this.isMGoing){
       bt.maskHash = Buffer.from(maskHash, 'hex');
+    }
+    else if(!this.IS_HNSPOOLSTRATUM && typeof response.params[9] != "undefined"){
+      bt.maskHash = Buffer.from(response.params[9],'hex');
+      let mask = utils.ZERO_HASH; 
+      bt.mask = mask;//wont be used but fill it out anyway
+      poolSupportsMask = true;
     }
     else{
       //TODO: When hstratum finally sends out .maskHash() values add here
@@ -1124,7 +1130,8 @@ class HandyMiner {
       nonce2: nonce2,
       blockTemplate:bt,
       extraNonce:extraNonce,
-      jobDifficulty:newDiff
+      jobDifficulty:newDiff, 
+      poolSupportsMask:poolSupportsMask
     };
 	}
   handleAsicMessage(data,asicID){
@@ -1225,7 +1232,10 @@ class HandyMiner {
           //solo stratum expects length == 16
           submission.push('00000000'+response.nonce.slice(8,16));  
         }
-        submission.push(lastJob.work.blockTemplate.mask.toString('hex'));
+        if(!lastJob.work.poolSupportsMask){
+          submission.push(lastJob.work.blockTemplate.mask.toString('hex'));
+          //legacy hstratum will expect a bunch of useless zero's here
+        }
         submitMethod = 'mining.submit';
       }
     }
