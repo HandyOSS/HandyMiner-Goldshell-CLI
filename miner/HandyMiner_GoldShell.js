@@ -1309,14 +1309,40 @@ class HandyMiner {
     let perWorkerRateAvg = {};
     let perAsicRateNow = {};
     let perAsicRateAvg = {};
-    Object.keys(this.asicWorkers).map(asicID=>{
+    /*let sumHashrates = 0;
+    let sumAverages = 0;
+    let sumAverageLength = 0;
+    if(!process.env.HANDYRAW){
+      Object.keys(this.asicWorkers).map(asicID=>{
+        //first display sum all
+        let workDepth = this.asicNames[asicID].workDepth;
+        for(let workerID=1;workerID<=workDepth;workerID++){
+          if(typeof this.asicJobHashrates[asicID+'_'+workerID] == "undefined"){
+            continue;
+          }
+          let hashRatePerSecond = this.asicJobHashrates[asicID+'_'+workerID].rate;
+          sumHashrates += hashRatePerSecond;
+
+          let hourlyAvg = this.asicJobHashrates[asicID+'_'+workerID].last200Rates.reduce((a,b)=>{
+            return a+b;
+          })/this.asicJobHashrates[asicID+'_'+workerID].last200Rates.length;
+          sumAverages += hourlyAvg;
+          sumAverageLength += 1;
+        }
+      });
+      let totalAverageHashrate = sumAverages / sumAverageLength;
+    
+    }*/
+    Object.keys(this.asicWorkers).map((asicID,asicI)=>{
       perAsicRateNow[asicID] = 0;
       perAsicRateAvg[asicID] = 0;
       perWorkerRateNow[asicID] = {};
       perWorkerRateAvg[asicID] = {};
       let workDepth = this.asicNames[asicID].workDepth;
       for(let workerID=1;workerID<=workDepth;workerID++){
-
+        if(typeof this.asicJobHashrates[asicID+'_'+workerID] == "undefined"){
+          continue;
+        }
         let hashRatePerSecond = this.asicJobHashrates[asicID+'_'+workerID].rate;
         this.asicJobHashrates[asicID+'_'+workerID].last200Rates.push(hashRatePerSecond);
         if(this.asicJobHashrates[asicID+'_'+workerID].last200Rates.length >= 200){
@@ -1333,10 +1359,16 @@ class HandyMiner {
         if(isNaN(hourlyAvg)){
           hourlyAvg = 0;
         }
+        if(hourlyAvg == null){
+          hourlyAvg = 0;
+        }
         if(hashRatePerSecond < 0){
           hashRatePerSecond = 0;
         }
         if(isNaN(hashRatePerSecond)){
+          hashRatePerSecond = 0;
+        }
+        if(hashRatePerSecond == null){
           hashRatePerSecond = 0;
         }
 
@@ -1360,16 +1392,34 @@ class HandyMiner {
           console.log(`\x1b[36m######## WORKERID\x1b[0m: ${workerID}, \x1b[36mNOW\x1b[0m: ${Math.round(perWorkerRateNow[asicID][workerID]*100)/100}GH, \x1b[36mAVG-1HR\x1b[0m: ${Math.round(perWorkerRateAvg[asicID][workerID]*100)/100}GH`);
         }
         console.log('');
+        if(asicI == Object.keys(this.asicWorkers).length-1){
+          //is last, display total
+
+          console.log(`\x1b[36m##### TOTAL HASHRATE NOW\x1b[0m: ${Math.round(sumRateNow*100)/100}GH, \x1b[36mAVG-1HR\x1b[0m: ${Math.round((sumRateAvg)*100)/100}GH`);
+          console.log('');
+        }
       }
       else{
         let workerHashrates = {};
         for(let workerID=1;workerID<=workDepth;workerID++){
+          let wNow = 0;
+          let wAvg = 0;
+          
+          if(typeof perWorkerRateNow[asicID][workerID] != "undefined"){
+            wNow = Math.round(perWorkerRateNow[asicID][workerID]*100)/100;
+            wAvg = Math.round(perWorkerRateAvg[asicID][workerID]*100)/100;
+          }
+
           workerHashrates[workerID] = {
-            hashrateNow: Math.round(perWorkerRateNow[asicID][workerID]*100)/100,
-            hashrateAvg: Math.round(perWorkerRateAvg[asicID][workerID]*100)/100
+            hashrateNow: wNow,
+            hashrateAvg: wAvg
           };
         }
         //return api output
+        let lastNonce = '0000000000000000';
+        if(typeof this.asicJobHashrates[asicID+'_'+1] != "undefined"){
+          lastNonce = this.asicJobHashrates[asicID+'_'+1].last;
+        }
         let asicData = {
           type:'asicStats',
           data:{
@@ -1384,7 +1434,7 @@ class HandyMiner {
             hashrateAvg: Math.round(perAsicRateAvg[asicID]*100)/100,
             workerHashrates:workerHashrates,
             solutions: this.asicShares[asicID],
-            lastNonce: this.asicJobHashrates[asicID+'_'+1].last
+            lastNonce: lastNonce
           }
         }
         process.stdout.write(JSON.stringify(asicData)+'\n')
@@ -1547,6 +1597,7 @@ class HandyMiner {
       ports = ports.filter(p=>{
         return Object.keys(this.asicNames).indexOf(p.path) == -1;
       });
+      pollCount = ports.length;
       
       ports.map(port=>{
         
@@ -1573,13 +1624,12 @@ class HandyMiner {
           }
         })
         conn.on('data',data=>{
-          hasPolled++;
-          
           if(data[3] == 0x54){
             let asicInfo = this.goldShellParser.parseASICDeviceInfo(data,p);
             asics.push(asicInfo);
           }
           conn.close(err=>{
+            hasPolled++;
             this.finishCheck(hasPolled,pollCount,asics);
           });
           //this.finishCheck(hasPolled,pollCount,asics);
