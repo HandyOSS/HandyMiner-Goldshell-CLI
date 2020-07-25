@@ -148,6 +148,7 @@ class HandyMiner {
     this.asicWorkQueueNext = {};
     this.asicInfoLookupIntervals = {};
     this.hasDisplayedZeroAsicMessage = false;
+    this.didInitialHardwareDetection = false;
     this.gpuNames = {};
     this.lastGPUHashrate = {};
     if(process.argv[2] == '-1'){
@@ -1329,7 +1330,13 @@ class HandyMiner {
         if(hourlyAvg < 0){
           hourlyAvg = 0;
         }
+        if(isNaN(hourlyAvg)){
+          hourlyAvg = 0;
+        }
         if(hashRatePerSecond < 0){
+          hashRatePerSecond = 0;
+        }
+        if(isNaN(hashRatePerSecond)){
           hashRatePerSecond = 0;
         }
 
@@ -1613,6 +1620,7 @@ class HandyMiner {
       //process.exit(0);
     }
     else{
+      this.hasDisplayedZeroAsicMessage = true; //already displayed them here
       if(process.env.HANDYRAW){
         /*let regResp = {
           data:asics,
@@ -1640,13 +1648,17 @@ class HandyMiner {
       
       //process.exit(0);
     }
+    if(!this.didInitialHardwareDetection){
+      this.didInitialHardwareDetection = true;
+      this.listenForNewHardware();
+    }
   }
 	mineBlock(response){
     const _this = this;
 
     //this.generateWork(); //prep some work ahead of time for the miner exec to pickup right away on init
     if(process.env.HANDYRAW){
-      process.stdout.write(JSON.stringify({type:'stratumLog',message:'starting miner'})+'\n')
+      process.stdout.write(JSON.stringify({type:'stratumLog',message:'starting miner, detecting ASICs'})+'\n')
     }
 
     if(_this.asics != '-1'){
@@ -1729,7 +1741,6 @@ class HandyMiner {
         fs.writeFileSync(process.env.HOME+'/.HandyMiner/version.txt',mTarget);
       }
     }
-    this.listenForNewHardware();
     //exit hooks to fire only once
     exitHook((callback)=>{
       this.killHandyMiner(callback);
