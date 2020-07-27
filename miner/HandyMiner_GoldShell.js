@@ -264,11 +264,14 @@ class HandyMiner {
     if(typeof this.lastASICReporterTimeout != "undefined"){
       clearTimeout(this.lastASICReporterTimeout);
     }
-
+    let timeInterval = 20000;
+    if(process.env.HANDYMINER_GUI_NODE_EXEC){
+      timeInterval = 5000;
+    }
     this.lastASICReporterTimeout = setTimeout(()=>{
       this.tickHashrateDisplay();
       this.startAvgHashrateReporter();
-    },20000)
+    },timeInterval)
   }
   startSocket(){
     if(typeof this.server != "undefined"){
@@ -1113,6 +1116,7 @@ class HandyMiner {
       rawHeader:hdrRaw,
       nonce:nonce,
       target: bt.target,
+      targetString: targetString,
       nonce2: nonce2,
       blockTemplate:bt,
       extraNonce:extraNonce,
@@ -1151,6 +1155,10 @@ class HandyMiner {
               
             }
           })
+          let timeInterval = 20000;
+          if(process.env.HANDYMINER_GUI_NODE_EXEC){
+            timeInterval = 5000;
+          }
           let sI = setInterval(()=>{
             let bufferStats = new Buffer.from('A53C96A210100000005200000000000000000069C35A','hex');
             //get operating temps
@@ -1160,7 +1168,7 @@ class HandyMiner {
             
             });
 
-          },20000);
+          },timeInterval);
           this.asicInfoLookupIntervals[asicID] = sI;
         }
         else{
@@ -1972,7 +1980,7 @@ class HandyMiner {
       }
       if(process.env.HANDYRAW && !_this.isMGoing){
         //log our difficulty and target information for dashboardface
-        process.stdout.write(JSON.stringify({difficulty:work.jobDifficulty,target:work.blockTemplate.target.toString('hex'),networkDifficulty:work.blockTemplate.difficulty,asic:serialPort,worker:workerID,platform:serialPort,type:'difficulty'})+'\n');
+        process.stdout.write(JSON.stringify({difficulty:work.jobDifficulty,target:work.targetString,networkDifficulty:work.blockTemplate.difficulty,asic:serialPort,worker:workerID,platform:serialPort,type:'difficulty'})+'\n');
       }
     });
 
