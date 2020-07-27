@@ -16,8 +16,8 @@ $(document).ready(()=>{
 class HandyGuide{
 	constructor(){
 		//////CHANGEME WHEN MINER UPDATES HAPPEN
-		this.zipDownloadLink = 'https://github.com/HandyMiner/HandyMiner-Goldshell-CLI/archive/0.0.1.zip';
-		this.tarDownloadLink = 'https://github.com/HandyMiner/HandyMiner-Goldshell-CLI/archive/0.0.1.tar.gz';
+		this.zipDownloadLink = 'https://github.com/HandyMiner/HandyMiner-Goldshell-CLI/archive/0.0.2.zip';
+		this.tarDownloadLink = 'https://github.com/HandyMiner/HandyMiner-Goldshell-CLI/archive/0.0.2.tar.gz';
 		//END CHANGEME
 
 		this.changeLanguages();
