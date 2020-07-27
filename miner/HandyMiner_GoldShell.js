@@ -1523,9 +1523,12 @@ class HandyMiner {
         this.handleAsicMessage(data,asicID);
         
       })
+      conn.on('error',d=>{
+        //needs to be present on mac to make close fire?
+        //console.log('error',d);
+      })
       conn.on('close',data=>{
         //was disconnected
-        
         delete this.asicWorkers[asicID];
         delete this.asicNames[asicID];
         if(this.asics.indexOf(asicID) >= 0){
