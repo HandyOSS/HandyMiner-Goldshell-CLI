@@ -352,9 +352,12 @@ class CLIDashboard{
 								this.addASICs(registeredASICs);
 							}
 						}
-						this.pushToLogs(json.data,'stdout');
+						this.pushToLogs([json],'stdout');
 					}
 					else if(json.type == 'asicStats'){
+						this.pushToLogs([json],'stdout');
+					}
+					else if(json.type == 'error'){
 						this.pushToLogs([json],'stdout');
 					}
 					else{
@@ -375,14 +378,14 @@ class CLIDashboard{
 							//its a status updat
 							this.pushToLogs(json.data||[json],'stdout');
 						}
-						else{
+						else if(json.type != "stratumLog"){
 							this.pushToLogs(json.data || [json],'stdout');
 						}
 						
 					}
-					if(json.type == 'error'){
+					/*if(json.type == 'error'){
 						this.pushToLogs(json.data,'error');
-					}
+					}*/
 					
 				}
 				catch(e){
@@ -450,6 +453,10 @@ class CLIDashboard{
 		jsonLines.map(json=>{
 
 			switch(json.type){
+				case 'registration':
+					let id = json.data.serialPort;
+					this.actuallyLog('\x1b[36mNEW ASIC CONNECTED: '+id+'\x1b[0m');
+				break;
 				case 'status':
 				case 'asicStats':
 					//hashrte update
@@ -480,6 +487,12 @@ class CLIDashboard{
 				case 'log':
 				case 'stratumLog':
 					this.actuallyLog(json);
+				break;
+				case 'error':
+					let isDisconnect = json.disconnected;
+					if(isDisconnect){
+						this.actuallyLog('\x1b[31mASIC '+json.data.asicID+' DISCONNECTED\x1b[0m');
+					}
 				break;
 			}
 			
