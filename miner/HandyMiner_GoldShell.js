@@ -35,7 +35,7 @@ const utils = require('./hsdUtils.js');
 const GoldShellParser = require('./GoldShell_Parser.js');
 
 class HandyMiner {
-	constructor(){
+	constructor(configOverride){
     this.goldShellParser = new GoldShellParser();
     let configFileName = 'goldshell.json';
     if(typeof process.argv[2] != "undefined"){
@@ -47,11 +47,15 @@ class HandyMiner {
         }
       }
     }
-    const config = JSON.parse(fs.readFileSync(__dirname+'/../'+configFileName));
-    if(config.enableHangryMode){
-      if(!process.env.HANDYRAW){
-        console.log("\x1b[36m#### ENABLING HANGRY MODE ####\x1b[0m");
-      }
+    let config;
+    try{
+      config = JSON.parse(fs.readFileSync(__dirname+'/../'+configFileName));
+    }
+    catch(e){
+
+    }
+    if(typeof configOverride != "undefined"){
+      config = configOverride;
     }
     this.config = config;
     this.solutionIDs = 0;
@@ -246,7 +250,7 @@ class HandyMiner {
     }
     if(!fs.existsSync(process.env.HOME+'/.HandyMiner/version.txt')){
       let myMin = Math.floor(Math.random()*59.999);
-      fs.writeFileSync(process.env.HOME+'/.HandyMiner/version.txt',myMin);
+      fs.writeFileSync(process.env.HOME+'/.HandyMiner/version.txt',myMin.toString());
     }
     let gpus = this.gpuListString.split(',').map(s=>{return s.trim();});
     let platform = this.platformID;

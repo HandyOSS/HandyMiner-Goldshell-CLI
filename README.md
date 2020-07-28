@@ -197,7 +197,7 @@ It will output something like:
 ```crw-rw---- 1 root dialout 166, 0 Jul 18 18:06 /dev/ttyACM0```
 Which in our case, the group is ```dialout```
 1. To add your username to the dialout group:
-```sudo useradd -G dialout $USER```
+```sudo useradd -G dialout $USER``` (OR ON SOME SYSTEMS) ```sudo adduser $USER dialout```
 2. Now restart the computer and voila, you can now mine without sudo!
 
 
