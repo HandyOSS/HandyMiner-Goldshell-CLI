@@ -45,6 +45,8 @@ to communicate with Handshake HSD via Stratum Mining.
 
 Linux: Dependencies install can be found in [./linux_installation.md](./linux_installation.md)
 
+Raspberry Pi Installation Steps [./raspberry_pi_installation.md](./raspberry_pi_installation.md)
+
 
 ## INSTALLATION
 
@@ -89,9 +91,9 @@ Note: many windows terminals dont do text coloring or dashboards right with npm 
 
 node ./miner/dashboard.js
 ```
-#### Linux Users note:
+#### Ubuntu Users note:
 
-To have this app talk to the goldshell serial devices out of the box, you may have to run with ```sudo``` (we did in ubuntu, but not raspi). If you run ```node mine.js``` and run into errors: To grant permissions to your user to talk to the devices without sudo, perform the steps in the [Linux FAQ](#linuxFAQ)
+To have this app talk to the goldshell serial devices out of the box, you may have to run with ```sudo``` (we did in ubuntu, but not raspi). If you run ```node mine.js``` and run into errors: To grant permissions to your user to talk to the devices without sudo, perform the steps in the [Ubuntu FAQ](#linuxFAQ)
 
 #### Mine blocks!
 
@@ -176,7 +178,7 @@ C:\Program Files\nodejs\node_modules\npm\bin
 ```
 <a id="linuxFAQ"></a>
 
-#### Linux FAQ
+#### Ubuntu FAQ
 
 If you try to mine out of the box without ```sudo``` you may see an error that looks like:
 ```
@@ -197,7 +199,7 @@ It will output something like:
 ```crw-rw---- 1 root dialout 166, 0 Jul 18 18:06 /dev/ttyACM0```
 Which in our case, the group is ```dialout```
 1. To add your username to the dialout group:
-```sudo useradd -G dialout $USER```
+```sudo useradd -G dialout $USER``` (OR ON SOME SYSTEMS) ```sudo adduser $USER dialout```
 2. Now restart the computer and voila, you can now mine without sudo!
 
 

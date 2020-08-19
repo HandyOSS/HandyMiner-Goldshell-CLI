@@ -1,2 +1,2 @@
 #!/bin/bash
-useradd -G dialout $USER
+adduser $USER dialout

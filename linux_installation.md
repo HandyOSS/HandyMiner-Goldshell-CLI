@@ -1,12 +1,18 @@
 ### Linux Installation
 
-Install node.js 10.x and deps
+Install node.js 14.x and deps
 ```
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
-sudo apt-get install node-gyp
-sudo apt install alsa-utils
+sudo apt-get install alsa-utils
 ```
+
+Now that node.js is installed, install the module dependencies for HandyMiner in the HandyMiner-Goldshell-GUI directory
+```
+npm install
+```
+
+Mine HNS.
 
 #### HiveOS Users possible gotchas during installation:
 
