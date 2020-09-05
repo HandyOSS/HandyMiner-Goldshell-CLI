@@ -12,7 +12,7 @@ curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-Now that node.js is installed, install the module dependencies for HandyMiner in the HandyMiner-Goldshell-GUI directory
+Now that node.js is installed, install the module dependencies for HandyMiner in the HandyMiner-Goldshell-CLI directory
 ```
 git clone https://github.com/HandyMiner/HandyMiner-Goldshell-CLI.git
 cd HandyMiner-Goldshell-CLI
