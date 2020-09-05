@@ -14,6 +14,8 @@ sudo apt-get install -y nodejs
 
 Now that node.js is installed, install the module dependencies for HandyMiner in the HandyMiner-Goldshell-GUI directory
 ```
+git clone https://github.com/HandyMiner/HandyMiner-Goldshell-CLI.git
+cd HandyMiner-Goldshell-CLI
 npm install
 ```
 
@@ -30,3 +32,7 @@ node mine.js
 ```
 node miner/dashboard.js
 ```
+
+##### Notes: 
+The first time you run ```node mine.js``` or ```node miner/dashboard.js``` a configurator will guide you through the steps to add your mining pool of choice, port, and wallet or username/password. 
+A list of some common mining pools can be found here: [https://handyminer.github.io/HandyMiner-Goldshell-CLI/index.html](https://handyminer.github.io/HandyMiner-Goldshell-CLI/index.html)
