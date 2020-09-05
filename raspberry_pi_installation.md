@@ -21,7 +21,7 @@ npm install
 
 #### Mine HNS.
 
-cd into the HandyMiner-Goldshell-GUI directory
+cd into the HandyMiner-Goldshell-CLI directory
 
 ##### Pi 3 and below must only use the standard CLI:
 ```
