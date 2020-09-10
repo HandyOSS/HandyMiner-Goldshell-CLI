@@ -21,7 +21,7 @@
 
 **HandyMiner Social Channels:**
 
-[HandshakeTalk Telegram](https://t.me/handshaketalk); [HandyMiner Support](https://discord.gg/VMUneym)
+[HandshakeTalk Telegram](https://t.me/handshaketalk)
 
 
 Description: A simple CLI interface (+optional Dashboard) for HSD Mining to enable the Goldshell HS1
