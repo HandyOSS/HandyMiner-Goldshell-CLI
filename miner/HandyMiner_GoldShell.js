@@ -445,6 +445,7 @@ class HandyMiner {
         resolve();
       }
       Object.keys(this.asicWorkers).map(workerID=>{
+
         let resetDeviceParamsBuffer = new Buffer.from('A53C96A21010000000A200000000040000004169C35A','hex');
         this.asicWorkers[workerID].write(resetDeviceParamsBuffer,err=>{
           complete++;
@@ -593,7 +594,7 @@ class HandyMiner {
         break;
         case 'subscribe':
           this.sid = d.result;
-          fs.writeFileSync(process.env.HOME+'/.HandyMiner/hnspool_sid.txt',this.sid);
+          fs.writeFileSync(process.env.HOME+'/.HandyMiner/hnspool_sid.txt',this.sid.toString('utf8'));
           //this.nonce1 = d.result;
           if(this.isMGoing){
             this.nonce1Local = d.result;
@@ -1148,7 +1149,20 @@ class HandyMiner {
             console.log("HANDY:: \x1b[36mASIC %s (%s)\x1b[0m INITIALIZED",asicID,asicInfo.modelName);
           }
           //now init parameters
-          let setDeviceParamsBuffer = new Buffer.from('A53C96A21010000000A2EE028A02040000004169C35A','hex');
+                     //                         8A02 = frequency = 650
+                     //                                     41 = temp target = 65C                         
+                     //                                     5A = temp target = 90C
+          let params = 'A53C96A21010000000A2EE028A02040000004169C35A'; //default hs1 params
+          if(asicInfo.modelName.indexOf('Plus') >= 0){
+            //is hs1 plus, new frequencies!!
+                    //                        8A02 = frequency = 650
+                    //                        A302 = 675
+                    //                        BC02 = 700
+                    //                        EE02 = 750 * use at your own risk...
+            params = 'A53C96A21010000000A2EE02BC02040000004169C35A';
+          }
+                                                     //
+          let setDeviceParamsBuffer = new Buffer.from(params,'hex');
           this.asicWorkers[asicID].write(setDeviceParamsBuffer,err=>{
             if(err){
               console.error('error setting device params',err.toString('utf8'));
@@ -1163,6 +1177,7 @@ class HandyMiner {
           if(process.env.HANDYMINER_GUI_NODE_EXEC){
             timeInterval = 5000;
           }
+          let refreshJobsI = 0;
           let sI = setInterval(()=>{
             let bufferStats = new Buffer.from('A53C96A210100000005200000000000000000069C35A','hex');
             //get operating temps
@@ -1171,7 +1186,17 @@ class HandyMiner {
               //console.log('poll device info',err);
             
             });
-
+            //refresh jobs every 20s to prevent nonce overflow
+            if(process.env.HANDYMINER_GUI_NODE_EXEC){
+              if(refreshJobsI % 4 == 0 && refreshJobsI > 0){
+                this.refreshAllJobs(true);
+              }
+              refreshJobsI = refreshJobsI >= 4 ? 0 : refreshJobsI+1;
+            }
+            else{
+              this.refreshAllJobs(true);
+            }
+            
           },timeInterval);
           this.asicInfoLookupIntervals[asicID] = sI;
         }
@@ -1734,7 +1759,7 @@ class HandyMiner {
     }
 
 	}
-  refreshJob(jobData){
+  refreshJob(jobData,silenceRefreshLog){
     let intensity = 0;
     if(this.minerIntensity.toString().split(',').length == 1){
       intensity = this.minerIntensity;
@@ -1747,15 +1772,15 @@ class HandyMiner {
       id:jobData.gpuID,
       intensity:intensity
     }
-    this.getDeviceWork([workObject]);
+    this.getDeviceWork([workObject],silenceRefreshLog);
   }
-  refreshAllJobs(){
+  refreshAllJobs(silenceRefreshLog){
     //refresh all when we get difficulty notices in solo mode
     Object.keys(this.gpuDeviceBlocks).map((k)=>{
       let d = this.gpuDeviceBlocks[k];
       let gpuID = d.gpu;
       let platformID = d.platform;
-      this.refreshJob({gpuID:gpuID,platformID:platformID});
+      this.refreshJob({gpuID:gpuID,platformID:platformID},silenceRefreshLog);
     })
   }
   refreshOutstandingJobs(){
@@ -1946,7 +1971,7 @@ class HandyMiner {
     //C. Above - 1 + 0.5
 
   }
-  getDeviceWork(deviceWorkJSON){
+  getDeviceWork(deviceWorkJSON,silenceRefreshLog){
     //array of getworks from stdin
     const _this = this;
 
@@ -1985,17 +2010,18 @@ class HandyMiner {
         //console.log('should write work');
         this.writeWorkToASIC(serialPort,workerID,this.gpuDeviceBlocks[workObject.id+'_'+workObject.platform]);
       }
-      if(process.env.HANDYRAW && !_this.isMGoing){
+      if(process.env.HANDYRAW && !_this.isMGoing && typeof silenceRefreshLog == "undefined"){
         //log our difficulty and target information for dashboardface
         process.stdout.write(JSON.stringify({difficulty:work.jobDifficulty,target:work.targetString,networkDifficulty:work.blockTemplate.difficulty,asic:serialPort,worker:workerID,platform:serialPort,type:'difficulty'})+'\n');
       }
     });
-
-    if(process.env.HANDYRAW){
-      process.stdout.write(JSON.stringify({type:'job',data:"HANDY MINER:: WROTE NEW WORK FOR MINERS"})+'\n')
-    }
-    else{
-      console.log("\x1b[36mHANDY MINER::\x1b[0m WROTE NEW WORK FOR MINERS"/*,messageStrings*/);
+    if(typeof silenceRefreshLog == "undefined"){
+      if(process.env.HANDYRAW){
+        process.stdout.write(JSON.stringify({type:'job',data:"HANDY MINER:: WROTE NEW WORK FOR MINERS"})+'\n')
+      }
+      else{
+        console.log("\x1b[36mHANDY MINER::\x1b[0m WROTE NEW WORK FOR MINERS"/*,messageStrings*/);
+      }
     }
 
   }
