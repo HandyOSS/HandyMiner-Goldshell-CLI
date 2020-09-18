@@ -6,6 +6,7 @@ class GoldShellAsic{
 		const version = data[4];
 		const packetLen = parseInt(data.slice(5,5+4).reverse().toString('hex'),16);
 		const modelNameLen = data[9];
+		
 		let position = 10+modelNameLen;
 
 		const modelName = data.slice(10,position).toString('utf8');
@@ -14,7 +15,11 @@ class GoldShellAsic{
 			//hs1 plus
 			isHS1Plus = true;
 			position += 2;
-		};
+		}
+		else{
+			//is hs1
+			position += 3;
+		}
 
 		const fwLen = data[position];
 		position += 1;
@@ -22,6 +27,10 @@ class GoldShellAsic{
 		position += fwLen;
 		if(isHS1Plus){
 			position += 3; //whitespace at start of serial for hs1 plus..
+		}
+		else{
+			//hs1
+			position += 3;
 		}
 		let pNext = isHS1Plus ? position + 18 : position + 32;
 		const serial = data.slice(position,pNext).toString('utf8');

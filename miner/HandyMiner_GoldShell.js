@@ -1149,16 +1149,18 @@ class HandyMiner {
             console.log("HANDY:: \x1b[36mASIC %s (%s)\x1b[0m INITIALIZED",asicID,asicInfo.modelName);
           }
           //now init parameters
-                     //                         8A02 = frequency = 650
-                     //                                     41 = temp target = 65C                         
-                     //                                     5A = temp target = 90C
+                     //                        |8A02| = frequency = 650, default hs1
+                     //                        |A302| = 675
+                     //                        |BC02| = 700
+                     //                        |    |       41 = temp target = 65C                         
+                     //                        |    |       5A = temp target = 90C
           let params = 'A53C96A21010000000A2EE028A02040000004169C35A'; //default hs1 params
           if(asicInfo.modelName.indexOf('Plus') >= 0){
             //is hs1 plus, new frequencies!!
-                    //                        8A02 = frequency = 650
-                    //                        A302 = 675
-                    //                        BC02 = 700
-                    //                        EE02 = 750 * use at your own risk...
+                    //                       |8A02| = frequency = 650
+                    //                       |A302| = 675
+                    //                       |BC02| = 700 = 110GH hs1plus, handyminer default
+                    //                       |EE02| = 750 * use at your own risk...
             params = 'A53C96A21010000000A2EE02BC02040000004169C35A';
           }
                                                      //
@@ -1370,6 +1372,7 @@ class HandyMiner {
       let totalAverageHashrate = sumAverages / sumAverageLength;
     
     }*/
+
     Object.keys(this.asicWorkers).map((asicID,asicI)=>{
       perAsicRateNow[asicID] = 0;
       perAsicRateAvg[asicID] = 0;
@@ -1418,6 +1421,9 @@ class HandyMiner {
         sumTotal++;
         sumRateNow += hashRatePerSecond; 
         sumRateAvg += hourlyAvg;
+      }
+      if(typeof this.asicStats[asicID] == "undefined"){
+        return; //no data yet
       }
       if(!process.env.HANDYRAW){
         console.log('');
