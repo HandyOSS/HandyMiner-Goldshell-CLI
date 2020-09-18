@@ -94,7 +94,12 @@ class CLIDashboard{
 		this.asics[key].data.fan.push({fans:parseFloat(data.data.fanRpm),time:moment().format('HH:mm')});
 		this.asics[key].data.asicCoreClock.push({clock:parseFloat(data.data.frequency),time:moment().format('HH:mm')});
 		this.asics[key].data.asicMemoryClock.push({clock:parseFloat(data.data.frequency),time:moment().format('HH:mm')});
-		this.asics[key].data.power.push({power:57.0,time:moment().format('HH:mm')});
+		//no way to detect power, go by projected watts based on model..
+		let powerW = 57.0;
+		if(data.data.name.indexOf('Plus') >= 0){
+			powerW = 115.0;
+		}
+		this.asics[key].data.power.push({power:powerW,time:moment().format('HH:mm')});
 		this.asics[key].data.voltage.push({voltage:parseFloat(data.data.voltage),time:moment().format('HH:mm')});
 		this.asics[key].invalid = data.data.solutions.invalid;
 		this.asics[key].valid = data.data.solutions.valid;
