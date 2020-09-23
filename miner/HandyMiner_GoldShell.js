@@ -232,6 +232,7 @@ class HandyMiner {
 
     this.propCalls = 1;
     this.gpuDeviceBlocks = {};
+    this.nextDeviceBlocks = {}; //while we wait for jobs to write to the asic we can get sols back ... :facepalm:
     this.workByHeaders = {};
     this.isSubmitting = false;
     this.solutionCache = [];
@@ -813,6 +814,8 @@ class HandyMiner {
                           this.asicShares[asicID].invalid++;
                         }
                       }
+            		      //this.generateWork(d.id.split('_').pop(),true);
+            		      //console.log('stale work',d,d.id,this.solCache[d.id],this.asicNames[d.id.split('_').pop()]);
                   }
                   else if(!this.isMGoing && this.config.mode == 'pool' && this.host.indexOf('6block') >= 0 && d.error[0] == 'invalid'){
                     //add result to d to make sounds play
@@ -1157,11 +1160,11 @@ class HandyMiner {
           let params = 'A53C96A21010000000A2EE028A02040000004169C35A'; //default hs1 params
           if(asicInfo.modelName.indexOf('Plus') >= 0){
             //is hs1 plus, new frequencies!!
-                    //                       |8A02| = frequency = 650
+                    //                       |8A02| = frequency = 650 = ~102GH hs1plus, handyminer default
                     //                       |A302| = 675
-                    //                       |BC02| = 700 = 110GH hs1plus, handyminer default
+                    //                       |BC02| = 700 = 110GH hs1plus
                     //                       |EE02| = 750 * use at your own risk...
-            params = 'A53C96A21010000000A2EE02BC02040000004169C35A';
+            params = 'A53C96A21010000000A2EE028A02040000004169C35A';
           }
                                                      //
           let setDeviceParamsBuffer = new Buffer.from(params,'hex');
@@ -1191,12 +1194,14 @@ class HandyMiner {
             //refresh jobs every 20s to prevent nonce overflow
             if(process.env.HANDYMINER_GUI_NODE_EXEC){
               if(refreshJobsI % 4 == 0 && refreshJobsI > 0){
-                this.refreshAllJobs(true);
+                //this.refreshAllJobs(true);
+                this.generateWork(asicID,true);
               }
               refreshJobsI = refreshJobsI >= 4 ? 0 : refreshJobsI+1;
             }
             else{
-              this.refreshAllJobs(true);
+              //this.refreshAllJobs(true);
+              this.generateWork(asicID,true);
             }
             
           },timeInterval);
@@ -1215,6 +1220,8 @@ class HandyMiner {
       break;
       case 0x55:
         //console.log('respond to job command');
+        let justFinished = this.asicWorkQueueNext[asicID] - 1;
+        this.gpuDeviceBlocks[justFinished+'_'+asicID] = this.nextDeviceBlocks[justFinished+'_'+asicID];
         this.queueNextWork(asicID);
         
       break;
@@ -1223,7 +1230,14 @@ class HandyMiner {
         let asicNonceResponse = this.goldShellParser.parseASICNonce(data);
         //console.log('nonce response',asicNonceResponse);
         this.recordHashrate(asicID,asicNonceResponse.jobID,asicNonceResponse.nonce);
-        this.submitASICNonce(asicNonceResponse,asicID,this.gpuDeviceBlocks[asicNonceResponse.jobID+'_'+asicID]);
+        //this.submitASICNonce(asicNonceResponse,asicID,this.gpuDeviceBlocks[asicNonceResponse.jobID+'_'+asicID]);
+        let workSolved = typeof this.gpuDeviceBlocks[asicNonceResponse.jobID+'_'+asicID] == "undefined" ? this.nextDeviceBlocks[asicNonceResponse.jobID+'_'+asicID] : this.gpuDeviceBlocks[asicNonceResponse.jobID+'_'+asicID];
+      	if(typeof workSolved == "undefined" && typeof this.nextDeviceBlocks[asicNonceResponse.jobID+'_'+asicID] != "undefined"){
+          		this.gpuDeviceBlocks[asicNonceResponse.jobID+'_'+asicID] = this.nextDeviceBlocks[asicNonceResponse.jobID+'_'+asicID];
+          		workSolved = this.gpuDeviceBlocks[asicNonceResponse.jobID+'_'+asicID];
+      	}
+	      //console.log('nonce solved',asicNonceResponse.jobID,asicID,workSolved);
+        this.submitASICNonce(asicNonceResponse,asicID,workSolved);
         
       break;
     }
@@ -1307,7 +1321,7 @@ class HandyMiner {
     //console.log('to queue next',asicID);
     let nextQueued = this.asicWorkQueueNext[asicID];
 
-    let work = this.gpuDeviceBlocks[nextQueued+'_'+asicID];
+    let work = this.nextDeviceBlocks[nextQueued+'_'+asicID];
     //console.log('queued up',nextQueued,work);
     if(typeof work != "undefined"){
       //console.log('queue next work?',nextQueued);
@@ -1541,7 +1555,7 @@ class HandyMiner {
     data += '69C35A';
     
     serialConn.write(new Buffer.from(data,'hex'),err=>{
-        
+      //this.gpuDeviceBlocks[workerID+'_'+asicID] = this.nextDeviceBlocks[workerID+'_'+asicID];    
     })
   }
   spawnASICWorker(asicID,asicArrayI){
@@ -1788,6 +1802,15 @@ class HandyMiner {
       let platformID = d.platform;
       this.refreshJob({gpuID:gpuID,platformID:platformID},silenceRefreshLog);
     })
+    if(Object.keys(this.gpuDeviceBlocks).length == 0 && Object.keys(this.nextDeviceBlocks).length > 0){
+      //has just started up lets refresh then...
+      Object.keys(this.nextDeviceBlocks).map((k)=>{
+        let d = this.nextDeviceBlocks[k];
+        let gpuID = d.gpu;
+        let platformID = d.platform;
+        this.refreshJob({gpuID:gpuID,platformID:platformID},silenceRefreshLog);
+      })
+    }
   }
   refreshOutstandingJobs(){
     //refresh only people who have submitted and are awaiting things but got an error
@@ -1801,7 +1824,7 @@ class HandyMiner {
       }
     })
   }
-  generateWork(asicID){
+  generateWork(asicID,silenceRefreshLog){
     //here
     //console.log('generate work then??',asicID,this.asicNames[asicID])
     let workDepth = this.asicNames[asicID].workDepth;
@@ -1816,7 +1839,7 @@ class HandyMiner {
       workObjects.push(workObject);
 
     }
-    this.getDeviceWork(workObjects);
+    this.getDeviceWork(workObjects,silenceRefreshLog);
     return false;
     
   }
@@ -1995,7 +2018,10 @@ class HandyMiner {
       workObject.nonce2 = nonce2String;
 
       let work = this.getBlockHeader(nonce2String);
-      this.gpuDeviceBlocks[workObject.id+'_'+workObject.platform] = {
+      
+      
+     // this.gpuDeviceBlocks[workObject.id+'_'+workObject.platform] = {
+      this.nextDeviceBlocks[workObject.id+'_'+workObject.platform] = {
         request:workObject,
         nonce2:nonce2String,
         work:work,
@@ -2008,13 +2034,13 @@ class HandyMiner {
         return;
       }
 
-      this.workByHeaders[work.header.toString('hex')] = this.gpuDeviceBlocks[workObject.id+'_'+workObject.platform];
+      this.workByHeaders[work.header.toString('hex')] = this.nextDeviceBlocks[workObject.id+'_'+workObject.platform];
       let serialPort = workObject.platform;
       let workerID = workObject.id;
       //console.log('workerid',workerID,typeof workerID)
       if(workerID == 1){
         //console.log('should write work');
-        this.writeWorkToASIC(serialPort,workerID,this.gpuDeviceBlocks[workObject.id+'_'+workObject.platform]);
+        this.writeWorkToASIC(serialPort,workerID,this.nextDeviceBlocks[workObject.id+'_'+workObject.platform]);
       }
       if(process.env.HANDYRAW && !_this.isMGoing && typeof silenceRefreshLog == "undefined"){
         //log our difficulty and target information for dashboardface
