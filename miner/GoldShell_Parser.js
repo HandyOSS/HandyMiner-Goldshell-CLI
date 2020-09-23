@@ -25,6 +25,13 @@ class GoldShellAsic{
 		position += 1;
 		const fwVersion = data.slice(position,position+fwLen).toString('utf8');
 		position += fwLen;
+		
+		let fwVersionInt = fwVersion.split('.');
+		fwVersionInt = fwVersionInt.pop();
+		if(fwVersionInt.length > 0){
+			fwVersionInt = parseInt(fwVersionInt);
+		}
+
 		if(isHS1Plus){
 			position += 3; //whitespace at start of serial for hs1 plus..
 		}
@@ -32,19 +39,20 @@ class GoldShellAsic{
 			//hs1
 			position += 3;
 		}
-		let pNext = isHS1Plus ? position + 18 : position + 32;
+		let pNext = isHS1Plus ? position + 18 : position + (fwVersionInt >= 4 ? 18 : 32);
 		const serial = data.slice(position,pNext).toString('utf8');
 		const hashRate = data.slice(position, position+32);
 		let wdPosition = 99;
 		if(isHS1Plus){
 			wdPosition = 54+3;
 		}
-		if(!isHS1Plus && (fwVersion.indexOf('0.0.4') >= 0 || fwVersion.indexOf('0.0.5') >= 0)){
-			//hs1 with firmware 0.0.4
-			wdPosition = 51+3;
+		
+		if(!isHS1Plus && (fwVersionInt >= 4)){
+			//hs1 with firmware 0.0.4+
+			wdPosition = 50+3;
 		}
 		let workDepth = data[wdPosition];//data[99];
-		if(typeof workDepth == "undefined" || workDepth == 0){
+		if(typeof workDepth == "undefined" || workDepth == 0 || workDepth > 8){
 			//in case future firmware changes workDepth location again
 			if(isHS1Plus){
 				workDepth = 8;
