@@ -59,6 +59,7 @@ class HandyMiner {
     }
     this.config = config;
     this.solutionIDs = 0;
+    this.minerIsConnected = false;
     if(this.config.muteWinningFanfare){
         //I'd like not  to revel in the glory of getting a block...
         PlayWinningSound = false;
@@ -617,7 +618,7 @@ class HandyMiner {
         break;
         case 'mining.set_difficulty':
         case 'set_difficulty':
-        
+          this.minerIsConnected = true;
           if(!this.useStaticPoolDifficulty && this.config.mode == 'pool'){
             let lastDiff = this.poolDifficulty;
             //do adaptive diff here
@@ -1173,9 +1174,9 @@ class HandyMiner {
               console.error('error setting device params',err.toString('utf8'));
             }
             else{
-              this.generateWork(asicID);
-              
-              
+              if(this.minerIsConnected){
+                this.generateWork(asicID);
+              }
             }
           })
           let timeInterval = 20000;
@@ -1555,7 +1556,7 @@ class HandyMiner {
     data += '69C35A';
     
     serialConn.write(new Buffer.from(data,'hex'),err=>{
-      //this.gpuDeviceBlocks[workerID+'_'+asicID] = this.nextDeviceBlocks[workerID+'_'+asicID];    
+      this.gpuDeviceBlocks[workerID+'_'+asicID] = this.nextDeviceBlocks[workerID+'_'+asicID];    
     })
   }
   spawnASICWorker(asicID,asicArrayI){
