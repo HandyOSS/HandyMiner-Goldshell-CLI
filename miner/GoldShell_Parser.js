@@ -6,13 +6,62 @@ class GoldShellAsic{
 		const version = data[4];
 		const packetLen = parseInt(data.slice(5,5+4).reverse().toString('hex'),16);
 		const modelNameLen = data[9];
-		const modelName = data.slice(10,10+16).toString('utf8');;
-		const fwLen = data[26];
-		const fwVersion = data.slice(27,27+8).toString('utf8');
-		const serial = data.slice(35,35+32).toString('utf8');
-		const hashRate = data.slice(67,67+32);
-		const workDepth = data[99];
-		//console.log('parse infos???',modelName,serial);
+		
+		let position = 10+modelNameLen;
+
+		const modelName = data.slice(10,position).toString('utf8');
+		let isHS1Plus = false;
+		if(modelName.indexOf('Plus') >= 0){
+			//hs1 plus
+			isHS1Plus = true;
+			position += 2;
+		}
+		else{
+			//is hs1
+			position += 3;
+		}
+
+		const fwLen = data[position];
+		position += 1;
+		const fwVersion = data.slice(position,position+fwLen).toString('utf8');
+		position += fwLen;
+		
+		let fwVersionInt = fwVersion.split('.');
+		fwVersionInt = fwVersionInt.pop();
+		if(fwVersionInt.length > 0){
+			fwVersionInt = parseInt(fwVersionInt);
+		}
+
+		if(isHS1Plus){
+			position += 3; //whitespace at start of serial for hs1 plus..
+		}
+		else{
+			//hs1
+			position += 3;
+		}
+		let pNext = isHS1Plus ? position + 18 : position + (fwVersionInt >= 4 ? 18 : 32);
+		const serial = data.slice(position,pNext).toString('utf8');
+		const hashRate = data.slice(position, position+32);
+		let wdPosition = 99;
+		if(isHS1Plus){
+			wdPosition = 54+3;
+		}
+		
+		if(!isHS1Plus && (fwVersionInt >= 4)){
+			//hs1 with firmware 0.0.4+
+			wdPosition = 50+3;
+		}
+		let workDepth = data[wdPosition];//data[99];
+		if(typeof workDepth == "undefined" || workDepth == 0 || workDepth > 8){
+			//in case future firmware changes workDepth location again
+			if(isHS1Plus){
+				workDepth = 8;
+			}
+			else{
+				workDepth = 4;
+			}
+		}
+		
 		return {
 			serialPort:serialPath,
 			modelName,
@@ -50,7 +99,7 @@ class GoldShellAsic{
 		const fanWarn = data[26];
 		const powerWarn = data[27];
 		const fanRpm = parseInt(data.slice(28,28+2).reverse().toString('hex'),16);
-		
+
 		return {
 			numChips,
 			numCores,
