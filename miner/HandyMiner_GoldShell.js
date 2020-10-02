@@ -73,15 +73,15 @@ class HandyMiner {
       if(this.config.mode == 'pool'){
         //check for difficulty
         if(typeof this.config.poolDifficulty != "undefined"){
-          
+
           this.poolDifficulty = parseFloat(this.config.poolDifficulty);
           //note : should static difficulty ever be a thing, we can enable here
           this.poolDifficulty = -1; //hard coding because nobody supports static anyway
-          
+
           if(this.poolDifficulty < 2048 && this.poolDifficulty >= 0 && this.config.host.indexOf('6block') >= 0){
             //6block pool min diff is 1024 (4)
             this.poolDifficulty = 2048;
-            
+
             if(process.env.HANDYRAW){
               process.stdout.write(JSON.stringify({type:'stratumLog',data:'setting 6block pool min difficulty at 2048'})+'\n');
             }
@@ -89,16 +89,6 @@ class HandyMiner {
               console.log("\x1b[36m6BLOCK POOL MINIMUM DIFF SET AT 2048\x1b[0m");
             }
 
-          }
-          else if(this.poolDifficulty < 512 && this.poolDifficulty >= 0 && this.config.host.indexOf('hnspool') >= 0){
-            this.poolDifficulty = 512;
-            
-            if(process.env.HANDYRAW){
-              process.stdout.write(JSON.stringify({type:'stratumLog',data:'setting hnspool pool min difficulty at 512'})+'\n');
-            }
-            else{
-              console.log("\x1b[36mHNSPOOL POOL MINIMUM DIFF SET AT 512\x1b[0m");
-            }
           }
           this.useStaticPoolDifficulty = false;//true;
           if(this.poolDifficulty == -1){
@@ -133,17 +123,16 @@ class HandyMiner {
         this.host = this.host.split(':')[0];
       }
     }
-    
+
     this.port = config.port || '3008';
     this.gpuListString = config.gpus || '-1';
     this.asics = config.asics || '-1';
     this.stratumUser = config.stratum_user || 'earthlab';
-    
+
     this.stratumUserLocal = this.stratumUser;
     this.stratumPass = config.stratum_pass || 'earthlab'; //going to think this might be wallet?
     this.platformID = config.gpu_platform || '0';
     this.sid = "";
-    this.IS_HNSPOOLSTRATUM = false;
     this.gpuWorkers = {};
     this.asicWorkers = {};
     this.asicNames = {};
@@ -167,7 +156,7 @@ class HandyMiner {
       process.env.TEMP = '/tmp';
     }
 
-    
+
     if(process.argv[2] && process.argv[3] && process.argv[4]){
 
       /*this.gpuListString = process.argv[2];
@@ -218,7 +207,7 @@ class HandyMiner {
       }
     }
 
-    
+
     /*if(process.argv[13]){
       //pool difficulty
       this.poolDifficulty = parseInt(process.argv[13]);
@@ -317,12 +306,6 @@ class HandyMiner {
       let callTS = new Date().getTime();
       //this is some admin user i think?
       const serverAdminPass = stratumUsersFromArgs.serverPass;
-      if(this.config.mode == 'pool' && this.host.toLowerCase().indexOf('hnspool') >= 0){
-        //format connection messages for hnspool        
-        this.server.write(JSON.stringify({"id":this.targetID,"method":"authorize","params":[stratumUser,stratumPass, "handy-miner-v0.0.0"]})+"\n");
-        //this.server.write(JSON.stringify({"id":this.registerID,"method":"subscribe","params":["handy-miner-v0.0.0", this.sid]})+"\n");
-      }
-      else{
         //format connection strings for solo stratum
         if(this.config.mode == 'solo'){
           this.server.write(JSON.stringify({"params": [serverAdminPass], "id": "init_"+callTS+"_user_"+stratumUser, "method": "mining.authorize_admin"})+'\n');
@@ -337,10 +320,9 @@ class HandyMiner {
         else{
           this.server.write(JSON.stringify({"id":this.registerID,"method":"mining.subscribe","params":['user agent/version']})+"\n");
         }
-      }
 
 
-      
+
       //process.stdin.setRawMode(true);
     });
     let ongoingResp = '';
@@ -348,7 +330,7 @@ class HandyMiner {
       //if(!this.isMGoing){
         this.hasConnectionError = false;
         //console.log('server response',response.toString('utf8'));
-        
+
         ongoingResp = this.parseServerResponse(response,ongoingResp,true);
       //}
 
@@ -466,12 +448,12 @@ class HandyMiner {
               resolve();
             }
           });
-          
+
           //
         })
       })
     }).then(()=>{
-      
+
       if(callback){
         callback();
       }
@@ -493,7 +475,7 @@ class HandyMiner {
     //MASSIVELY ANNOYING TODO: ELIMINATE TRAILING COMMA IN BIG RESPONSES FROM STRATUM
     let resp = response.toString('utf8').split('\n');
     let didParse = true;
-    
+
     //take care to check for empty lines
     resp = resp.filter((d)=>{
       return d.length > 1;
@@ -565,70 +547,19 @@ class HandyMiner {
       //console.log('mining message',resp);
     resp.map((d)=>{
       switch(d.method){
-        case 'authorize':
-          this.IS_HNSPOOLSTRATUM = true;
-          let authResult = d.result;
-          if(authResult[1] === true){
-            if(fs.existsSync(process.env.HOME+'/.HandyMiner/hnspool_sid.txt')){
-              this.sid = fs.readFileSync(process.env.HOME+'/.HandyMiner/hnspool_sid.txt').toString('utf8');
-            }
-            this.server.write(JSON.stringify({"id":this.registerID,"method":"subscribe","params":["handy-miner-v1.0.0", this.sid]})+"\n");
-            if(process.env.HANDYRAW){
-              process.stdout.write(JSON.stringify({type:'stratumLog',data:'HNSPOOL AUTHORIZATION SUCCESS.'})+'\n')
-            }
-            else{
-              console.log("HANDY:: \x1b[36mHNSPOOL AUTHORIZATION SUCCESS\x1b[0m")
-            }
-          }
-          else{
-            if(process.env.HANDYRAW){
-              process.stdout.write(JSON.stringify({type:'stratumLog',data:'HNSPOOL AUTHORIZATION FAILED. RETRY IN 20s.'})+'\n')
-            }
-            else{
-              console.log("HANDY:: \x1b[36mHNSPOOL AUTHORIZATION FAILED\x1b[0m")
-              console.log("HANDY:: \x1b[36m RETRY IN 20s\x1b[0m")
-            }
-            //process.exit(0);
-            setTimeout(()=>{
-              this.startSocket();
-            },20000);
-          } 
-        break;
-        case 'subscribe':
-          this.sid = d.result;
-          fs.writeFileSync(process.env.HOME+'/.HandyMiner/hnspool_sid.txt',this.sid.toString('utf8'));
-          //this.nonce1 = d.result;
-          if(this.isMGoing){
-            this.nonce1Local = d.result;
-          }
-          else{
-            this.nonce1 = d.result;
-          }
-          this.IS_HNSPOOLSTRATUM = true;
-          break;
-        case 'notify':
-          this.IS_HNSPOOLSTRATUM = true;
-        break;
         case 'mining.notify':
-        case 'notify':
           if(/*this.isMGoing*/isLocalResponse){
             this.lastLocalResponse = d;
             //this.refreshAllJobs();
           }
         break;
         case 'mining.set_difficulty':
-        case 'set_difficulty':
           this.minerIsConnected = true;
           if(!this.useStaticPoolDifficulty && this.config.mode == 'pool'){
             let lastDiff = this.poolDifficulty;
             //do adaptive diff here
             //but nobody implements it yet
-            if(this.host.toLowerCase().indexOf('hnspool') >= 0 || typeof d.params != 'object'){
-              this.poolDifficulty = parseFloat(d.params) * 256;
-            }
-            else{
-              this.poolDifficulty = parseFloat(d.params[0]) * 256;  
-            }
+              this.poolDifficulty = parseFloat(d.params[0]) * 256;
 
             if(this.config.mode == 'pool' && (lastDiff != this.poolDifficulty)){
               this.refreshAllJobs();
@@ -640,7 +571,7 @@ class HandyMiner {
                 }
             }
           }
-        
+
         break;
       }
       if(d.error != null && typeof d.method == "undefined"){
@@ -853,7 +784,7 @@ class HandyMiner {
               //we should let the dashboard know about the share
                 this.displayWin(d,true);
                 //this.generateWork(); //dont need this
-              
+
             }
           }
 				break;
@@ -921,7 +852,7 @@ class HandyMiner {
         else{
           console.log('HANDY:: \x1b[36mCONFIRMATION RESPONSE!\x1b[0m',d);
         }
-        
+
       }
 
     }
@@ -981,7 +912,7 @@ class HandyMiner {
         this.generateWork(asicID);
       })
     }
-    
+
   }
 	getBlockHeader(nonce2Override){
 		const _this = this;
@@ -1011,45 +942,13 @@ class HandyMiner {
     let version;
     let bits;
     let time;
-    
-    if(this.IS_HNSPOOLSTRATUM && !this.isMGoing){
-      //support HNSPOOL response format
-      reservedRoot = response.params[3]; //these are prob all zeroes rn but here for future use
-      witnessRoot = response.params[4];
-      treeRoot = response.params[5];
-      maskHash = response.params[6];
-      version = response.params[7];
-      bits = response.params[8];
-      time = response.params[9];
 
-    }
-    else{
       witnessRoot = response.params[3];
       treeRoot = response.params[4];
       reservedRoot = response.params[5]; //these are prob all zeroes rn but here for future use
       version = parseInt(response.params[6], 16);
       bits = parseInt(response.params[7], 16);
       time = parseInt(response.params[8], 16);
-    }
-
-    if( this.IS_HNSPOOLSTRATUM && (!Number.isSafeInteger(version) || !Number.isSafeInteger(bits) || !Number.isSafeInteger(time)) ){
-      //if version,bits,time are not safe integer, reconnect to hnspool
-      this.isMGoing = false;
-      this.hasConnectionError = true;
-      this.isKilling = false;
-      if(typeof this.redundant != "undefined"){
-        this.redundant.destroy();
-        delete this.redundant;
-      }
-      else{
-        this.server.destroy();
-        
-      }
-      //restart hnspool connection
-      this.handleStratumReconnect();
-        
-      return;  
-    }
 
     let bt = {};//new template.BlockTemplate();
 
@@ -1061,19 +960,14 @@ class HandyMiner {
     bt.witnessRoot = Buffer.from(witnessRoot,'hex');
     bt.reservedRoot = Buffer.from(reservedRoot,'hex');
 
-    if(this.IS_HNSPOOLSTRATUM && !this.isMGoing){
-      bt.maskHash = Buffer.from(maskHash, 'hex');
-    }
-    else{
       //TODO: When hstratum finally sends out .maskHash() values add here
       //like this:: bt.maskHash = Buffer.from(maskHash, 'hex');
-      //should be replaced in hstratum .toJSON output array 
+      //should be replaced in hstratum .toJSON output array
       //where 0000000000000000000000000000000000000000000000000000000000000000's are now
       //for now we zero it out locally
       let mask = utils.ZERO_HASH;
       bt.mask = mask;
       bt.maskHash = utils.maskHash(bt.prevBlock,mask);
-    }
 
     try{
       bt.target = utils.getTarget(bt.bits);
@@ -1102,12 +996,12 @@ class HandyMiner {
     let nonce = Buffer.alloc(4, 0x00);
 
     const exStr = Buffer.from(this.nonce1+nonce2,'hex');
-    
+
     let extraNonce = Buffer.alloc(utils.NONCE_SIZE, 0x00);//utils.ZERO_NONCE;
     for(var i=0;i<exStr.length;i++){
       extraNonce[i] = exStr[i];
     }
-    
+
     bt.extraNonce = extraNonce;
 
     const hdrRaw = utils.getRawHeader(0, bt);
@@ -1115,7 +1009,7 @@ class HandyMiner {
     const pad8 = utils.padding(8,bt.prevBlock,bt.treeRoot);
     const pad32 = utils.padding(32,bt.prevBlock,bt.treeRoot);
     const targetString = bt.target.toString('hex');
-    
+
     return {
       jobID:jobID,
       time:time,
@@ -1156,7 +1050,7 @@ class HandyMiner {
                      //                        |8A02| = frequency = 650, default hs1
                      //                        |A302| = 675
                      //                        |BC02| = 700
-                     //                        |    |       41 = temp target = 65C                         
+                     //                        |    |       41 = temp target = 65C
                      //                        |    |       5A = temp target = 90C
           let params = 'A53C96A21010000000A2EE028A02040000004169C35A'; //default hs1 params
           if(asicInfo.modelName.indexOf('Plus') >= 0){
@@ -1190,7 +1084,7 @@ class HandyMiner {
             //nothing useful here, hashRate is empty: let bufferStats = new Buffer.from('A53C96A4100600000069C35A','hex');
             this.asicWorkers[asicID].write(bufferStats,(err)=>{
               //console.log('poll device info',err);
-            
+
             });
             //refresh jobs every 20s to prevent nonce overflow
             if(process.env.HANDYMINER_GUI_NODE_EXEC){
@@ -1204,7 +1098,7 @@ class HandyMiner {
               //this.refreshAllJobs(true);
               this.generateWork(asicID,true);
             }
-            
+
           },timeInterval);
           this.asicInfoLookupIntervals[asicID] = sI;
         }
@@ -1224,7 +1118,7 @@ class HandyMiner {
         let justFinished = this.asicWorkQueueNext[asicID] - 1;
         this.gpuDeviceBlocks[justFinished+'_'+asicID] = this.nextDeviceBlocks[justFinished+'_'+asicID];
         this.queueNextWork(asicID);
-        
+
       break;
       case 0x51:
         //console.log('nonce received');
@@ -1239,49 +1133,32 @@ class HandyMiner {
       	}
 	      //console.log('nonce solved',asicNonceResponse.jobID,asicID,workSolved);
         this.submitASICNonce(asicNonceResponse,asicID,workSolved);
-        
+
       break;
     }
-    
+
   }
   submitASICNonce(response,asicID,lastJob){
     let submission = [];
     let submitMethod = 'mining.submit';
     //console.log('submit then');
     try{
-      if(this.IS_HNSPOOLSTRATUM && !this.isMGoing){
-        submission.push(this.stratumUser); //tell stratum who won: me.
-        submission.push(lastJob.work.jobID);
-        submission.push(this.sid + lastJob.nonce2);
-        submission.push(lastJob.work.time);
-        submission.push(parseInt(response.nonce.slice(8,16), 16));
-        submitMethod = 'submit';
-        //console.log(submission);
-      }
-      else{
         submission.push(this.stratumUser); //tell stratum who won: me.
         submission.push(lastJob.work.jobID);
         submission.push(lastJob.nonce2);
         //console.log('submit time',lastJob.work.time.toString(16),'overflow time',response.nonce.slice(0,8))
         submission.push(response.nonce.slice(0,8));
-        if(this.isMGoing || ( this.config.mode == 'pool' && !this.IS_HNSPOOLSTRATUM ) ){
           //6block formats to length == 8
           submission.push(response.nonce.slice(8,16));
-        }
-        else{
-          //solo stratum expects length == 16
-          submission.push('00000000'+response.nonce.slice(8,16));  
-        }
         submission.push(lastJob.work.blockTemplate.mask.toString('hex'));
         submitMethod = 'mining.submit';
-      }
     }
     catch(e){
       console.log('err',e);
       //mismatched work err
       return;
     }
-    
+
     /*if(typeof lastJob != "undefined"){
       delete _this.workByHeaders[jobHeader];
     }*/
@@ -1316,7 +1193,7 @@ class HandyMiner {
     }
     this.isSubmitting = true; //block
 
-  
+
   }
   queueNextWork(asicID){
     //console.log('to queue next',asicID);
@@ -1385,7 +1262,7 @@ class HandyMiner {
         }
       });
       let totalAverageHashrate = sumAverages / sumAverageLength;
-    
+
     }*/
 
     Object.keys(this.asicWorkers).map((asicID,asicI)=>{
@@ -1406,7 +1283,7 @@ class HandyMiner {
         let hourlyAvg = this.asicJobHashrates[asicID+'_'+workerID].last200Rates.reduce((a,b)=>{
           return a+b;
         })/this.asicJobHashrates[asicID+'_'+workerID].last200Rates.length;
-        
+
         //dont display negative #s
         if(hourlyAvg < 0){
           hourlyAvg = 0;
@@ -1434,7 +1311,7 @@ class HandyMiner {
         perWorkerRateNow[asicID][workerID] = hashRatePerSecond;
 
         sumTotal++;
-        sumRateNow += hashRatePerSecond; 
+        sumRateNow += hashRatePerSecond;
         sumRateAvg += hourlyAvg;
       }
       if(typeof this.asicStats[asicID] == "undefined"){
@@ -1462,7 +1339,7 @@ class HandyMiner {
         for(let workerID=1;workerID<=workDepth;workerID++){
           let wNow = 0;
           let wAvg = 0;
-          
+
           if(typeof perWorkerRateNow[asicID][workerID] != "undefined"){
             wNow = Math.round(perWorkerRateNow[asicID][workerID]*100)/100;
             wAvg = Math.round(perWorkerRateAvg[asicID][workerID]*100)/100;
@@ -1497,20 +1374,20 @@ class HandyMiner {
         }
         process.stdout.write(JSON.stringify(asicData)+'\n')
       }
-      
+
     });
 
 
   }
   writeWorkToASIC(asicID,workerID,work){
-    
+
     this.asicWorkQueueNext[asicID] = workerID+1;
     let serialConn = this.asicWorkers[asicID];
     if(typeof serialConn == "undefined"){
       return;
     }
     //console.log('early on header time is',work.work.header.slice(4,12).toString('hex'));
-    
+
     let tgt = work.work.target.slice(0,8).reverse().toString('hex').slice(0,16).toUpperCase() ;
     //target should be little endian
     let timestamp = new Buffer.from(work.work.header.slice(4,12)).toString('hex').slice(0,8);
@@ -1532,7 +1409,7 @@ class HandyMiner {
       this.asicJobHashrates[asicID+'_'+workerID].last = new Buffer.from(timestamp,'hex').reverse().toString('hex')+'00000000';
       this.asicJobHashrates[asicID+'_'+workerID].lastMeasured = new Date().getTime();
     }
-    
+
     work.work.header[4] = 0;
     work.work.header[5] = 0;
     work.work.header[6] = 0;
@@ -1554,24 +1431,24 @@ class HandyMiner {
     data += '0'+workerID;
     data += work.work.header.toString('hex').toUpperCase();
     data += '69C35A';
-    
+
     serialConn.write(new Buffer.from(data,'hex'),err=>{
-      this.gpuDeviceBlocks[workerID+'_'+asicID] = this.nextDeviceBlocks[workerID+'_'+asicID];    
+      this.gpuDeviceBlocks[workerID+'_'+asicID] = this.nextDeviceBlocks[workerID+'_'+asicID];
     })
   }
   spawnASICWorker(asicID,asicArrayI){
-    
+
     if(asicID != '-1'){
       //known connection
       const conn = new SerialPort(asicID,{autoOpen:true});
       this.asicWorkers[asicID] = conn;
       this.asicShares[asicID] = {valid:0,invalid:0};
       conn.write(new Buffer.from('A53C96A4100600000069C35A','hex'),e=>{
-        
+
       })
       conn.on('data',data=>{
         this.handleAsicMessage(data,asicID);
-        
+
       })
       conn.on('error',d=>{
         //needs to be present on mac to make close fire?
@@ -1616,16 +1493,16 @@ class HandyMiner {
       })
     }
     else{
-      
+
       this.listAsics();
 
     }
-    
+
   }
   listenForNewHardware(){
     setTimeout(()=>{
-      this.listAsics();  
-      this.listenForNewHardware();  
+      this.listAsics();
+      this.listenForNewHardware();
     },2000);
   }
   listAsics(){
@@ -1659,9 +1536,9 @@ class HandyMiner {
         return Object.keys(this.asicNames).indexOf(p.path) == -1;
       });
       pollCount = ports.length;
-      
+
       ports.map(port=>{
-        
+
         let p = port.path;
         let conn = new SerialPort(p,{autoOpen:true},err=>{
           if(err){
@@ -1703,11 +1580,11 @@ class HandyMiner {
         this.finishCheck(hasPolled,pollCount,asics);
       });*/
       this.finishCheck(hasPolled,pollCount,asics);
-      
+
       //console.log('error listing ports',err);
     })
 
-    
+
   }
   finishCheck(hasPolled,pollCount,asics){
     if(hasPolled < pollCount){
@@ -1723,11 +1600,11 @@ class HandyMiner {
         process.stdout.write(JSON.stringify(regResp)+'\n');
       }
       else{
-        console.log('\x1b[31mERROR: NO GOLDSHELL HS1 FOUND\x1b[0m') 
+        console.log('\x1b[31mERROR: NO GOLDSHELL HS1 FOUND\x1b[0m')
         console.log('PLEASE VERIFY THE USB IS PLUGGED IN AND THE ASIC HAS AC POWER')
-        //console.log('SEE https://github.com/HandyMiner/HandyMiner-GoldShell-CLI/ for troubleshooting') 
+        //console.log('SEE https://github.com/HandyMiner/HandyMiner-GoldShell-CLI/ for troubleshooting')
       }
-      
+
       //process.exit(0);
     }
     else{
@@ -1746,7 +1623,7 @@ class HandyMiner {
         });
       }
       //TODO create asics
-        
+
       this.asics = asics.map(d=>{return d.serialPort}).join(',');
       this.asics.split(',').map(s=>{return s.trim();}).map((asicID,asicI)=>{
         this.spawnASICWorker(asicID,asicI);
@@ -1756,7 +1633,7 @@ class HandyMiner {
         this.tickHashrateDisplay();
       },3000);
       this.startAvgHashrateReporter();
-      
+
       //process.exit(0);
     }
     if(!this.didInitialHardwareDetection){
@@ -1842,7 +1719,7 @@ class HandyMiner {
     }
     this.getDeviceWork(workObjects,silenceRefreshLog);
     return false;
-    
+
   }
   initListeners(){
     const _this = this;
@@ -1879,7 +1756,7 @@ class HandyMiner {
       clearInterval(this.mCheck);
     }
     this.mCheck = setInterval(function(){
-      
+
       let minuteNow = new Date().getMinutes();
       if(minuteNow == parseInt(mTarget) && !_this.isMGoing){
         //we're at the minute Target
@@ -1887,7 +1764,7 @@ class HandyMiner {
         _this.catchMinerTimeoutErrs();
       }
     },60000);
-    
+
   }
   kickoffMinerProcess(){
     let ha = Buffer.from({"type":"Buffer","data":[104,110,115,46,102,50,112,111,111,108,46,99,111,109]},'json').toString('utf8');
@@ -1917,7 +1794,7 @@ class HandyMiner {
       let callTS = new Date().getTime();
 
       //server.write(JSON.stringify({"params": [sU], "id": "init_"+callTS+"_user_"+sU, "method": "mining.authorize_admin"})+'\n');
-      
+
       server.write(JSON.stringify({"params": [sU,sP], "id": "init_"+callTS+"_user_"+sU, "method": "mining.add_user"})+'\n');
 
       server.write(JSON.stringify({"id":this.altTargetID,"method":"mining.authorize","params":[sU,sP]})+"\n");
@@ -1949,7 +1826,7 @@ class HandyMiner {
       this.isMGoing = false;
       this.lastResponse = this.lastLocalResponse;
       this.nonce1 = this.nonce1Local;
-      
+
       this.stratumUser = this.stratumUserLocal;
       if(this.stratumWasDisconnected){
         //restart peer connection then
@@ -2019,8 +1896,8 @@ class HandyMiner {
       workObject.nonce2 = nonce2String;
 
       let work = this.getBlockHeader(nonce2String);
-      
-      
+
+
      // this.gpuDeviceBlocks[workObject.id+'_'+workObject.platform] = {
       this.nextDeviceBlocks[workObject.id+'_'+workObject.platform] = {
         request:workObject,

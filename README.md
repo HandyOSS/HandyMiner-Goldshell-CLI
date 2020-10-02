@@ -145,8 +145,8 @@ registered:
 **stratum host**: stratum-us.hnspool.com
 **stratum_port**: 3001
 
-**username**: hnspool_registered_username
-**password**: hnspool_registered_password
+**username**: hnspool_registered_username.workerName or address.workerName
+**password**: anything
 
 <a id="advancedOptions"></a>
 ## Advanced Options:
