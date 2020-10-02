@@ -5,9 +5,9 @@
  * Parts of this software based on hash.js.
  */
 
-'use strict';
+"use strict";
 
-const assert = require('bsert');
+const assert = require("bsert");
 
 /**
  * HMAC
@@ -23,8 +23,8 @@ class HMAC {
    */
 
   constructor(Hash, size, x = [], y = []) {
-    assert(typeof Hash === 'function');
-    assert((size >>> 0) === size);
+    assert(typeof Hash === "function");
+    assert(size >>> 0 === size);
     assert(Array.isArray(x));
     assert(Array.isArray(y));
 
@@ -61,20 +61,16 @@ class HMAC {
     // Pad key
     const pad = Buffer.allocUnsafe(this.size);
 
-    for (let i = 0; i < key.length; i++)
-      pad[i] = key[i] ^ 0x36;
+    for (let i = 0; i < key.length; i++) pad[i] = key[i] ^ 0x36;
 
-    for (let i = key.length; i < pad.length; i++)
-      pad[i] = 0x36;
+    for (let i = key.length; i < pad.length; i++) pad[i] = 0x36;
 
     this.inner.init(...this.x);
     this.inner.update(pad);
 
-    for (let i = 0; i < key.length; i++)
-      pad[i] = key[i] ^ 0x5c;
+    for (let i = 0; i < key.length; i++) pad[i] = key[i] ^ 0x5c;
 
-    for (let i = key.length; i < pad.length; i++)
-      pad[i] = 0x5c;
+    for (let i = key.length; i < pad.length; i++) pad[i] = 0x5c;
 
     this.outer.init(...this.x);
     this.outer.update(pad);

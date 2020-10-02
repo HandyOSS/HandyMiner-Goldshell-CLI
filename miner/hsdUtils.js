@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
-const BN = require('bn.js');
-const assert = require('bsert');
-const bio = require('bufio');
+const BN = require("bn.js");
+const assert = require("bsert");
+const bio = require("bufio");
 
-const BLAKE2b = require('./crypto/blake2b.js');
+const BLAKE2b = require("./crypto/blake2b.js");
 
 /*hsd/lib/protocol/consensus.js*/
 exports.ZERO_HASH = Buffer.alloc(32, 0x00);
@@ -21,8 +21,7 @@ const B0 = 0x1;
 
 /*hsd/lib/protocol/consensus.js*/
 exports.toCompact = function toCompact(num) {
-  if (num.isZero())
-    return 0;
+  if (num.isZero()) return 0;
 
   let exponent = num.byteLength();
   let mantissa;
@@ -41,8 +40,7 @@ exports.toCompact = function toCompact(num) {
 
   let compact = (exponent << 24) | mantissa;
 
-  if (num.isNeg())
-    compact |= 0x800000;
+  if (num.isNeg()) compact |= 0x800000;
 
   compact >>>= 0;
 
@@ -51,8 +49,7 @@ exports.toCompact = function toCompact(num) {
 
 /*hsd/lib/protocol/consensus.js*/
 exports.fromCompact = function fromCompact(compact) {
-  if (compact === 0)
-    return new BN(0);
+  if (compact === 0) return new BN(0);
 
   const exponent = compact >>> 24;
   const negative = (compact >>> 23) & 1;
@@ -68,8 +65,7 @@ exports.fromCompact = function fromCompact(compact) {
     num.iushln(8 * (exponent - 3));
   }
 
-  if (negative)
-    num.ineg();
+  if (negative) num.ineg();
 
   return num;
 };
@@ -78,16 +74,13 @@ exports.fromCompact = function fromCompact(compact) {
 exports.getTarget = function getTarget(bits) {
   const target = exports.fromCompact(bits);
 
-  if (target.isNeg())
-    throw new Error('Target is negative.');
+  if (target.isNeg()) throw new Error("Target is negative.");
 
-  if (target.isZero())
-    throw new Error('Target is zero.');
+  if (target.isZero()) throw new Error("Target is zero.");
 
-  if (target.bitLength() > 256)
-    throw new Error('Target overflow.');
+  if (target.bitLength() > 256) throw new Error("Target overflow.");
 
-  return target.toArrayLike(Buffer, 'be', 32);
+  return target.toArrayLike(Buffer, "be", 32);
 };
 /*hsd/lib/mining/common.js*/
 function double256(target) {
@@ -113,46 +106,44 @@ function double256(target) {
   n += (hi * 0x100000000 + lo) * B0;
 
   return n;
-};
+}
 /*hsd/lib/mining/common.js*/
 exports.getDifficulty = function getDifficulty(target) {
   const d = DIFF;
   const n = double256(target);
 
-  if (n === 0)
-    return d;
+  if (n === 0) return d;
 
   return Math.floor(d / n);
 };
 
 /*hsd/lib/primitives/abstractblock.js*/
-exports.maskHash = function maskHash(prevBlock,mask){
+exports.maskHash = function maskHash(prevBlock, mask) {
   return BLAKE2b.multi(prevBlock, mask);
-}
+};
 /*hsd/lib/primitives/abstractblock.js*/
-exports.padding = function padding(size,prevBlock,treeRoot) {
-  assert((size >>> 0) === size);
+exports.padding = function padding(size, prevBlock, treeRoot) {
+  assert(size >>> 0 === size);
 
   const pad = Buffer.alloc(size);
 
-  for (let i = 0; i < size; i++)
-    pad[i] = prevBlock[i % 32] ^ treeRoot[i % 32];
+  for (let i = 0; i < size; i++) pad[i] = prevBlock[i % 32] ^ treeRoot[i % 32];
 
   return pad;
-}
+};
 /*hsd/lib/primitives/abstractblock.js::toMiner*/
-exports.getRawHeader = function toMiner(nonce,bt){
+exports.getRawHeader = function toMiner(nonce, bt) {
   const bw = bio.write(128 + 128);
 
   // Preheader.
   bw.writeU32(nonce);
   bw.writeU64(bt.time);
-  bw.writeBytes(exports.padding(20,bt.prevBlock,bt.treeRoot));
+  bw.writeBytes(exports.padding(20, bt.prevBlock, bt.treeRoot));
   bw.writeHash(bt.prevBlock);
   bw.writeHash(bt.treeRoot);
 
   // Replace commitment hash with mask hash.
-  bw.writeHash(bt.maskHash/*maskHash(bt.prevBlock,bt.mask)*/);
+  bw.writeHash(bt.maskHash /*maskHash(bt.prevBlock,bt.mask)*/);
 
   // Subheader.
   //console.log('bt',bt);
@@ -164,12 +155,12 @@ exports.getRawHeader = function toMiner(nonce,bt){
   bw.writeU32(bt.bits);
 
   return bw.render();
-}
+};
 
 /*hsd/lib/primitives/abstractblock.js*/
 function fromMiner(data) {
   const br = bio.read(data);
-  let bt = {}
+  let bt = {};
   // Preheader.
   bt.nonce = br.readU32();
   bt.time = br.readU64();
@@ -179,7 +170,7 @@ function fromMiner(data) {
   bt.prevBlock = br.readHash();
   bt.treeRoot = br.readHash();
 
-  assert(padding.equals(exports.padding(20,bt.prevBlock,bt.treeRoot)));
+  assert(padding.equals(exports.padding(20, bt.prevBlock, bt.treeRoot)));
 
   // Note: mask _hash_.
   bt._maskHash = br.readHash();
@@ -224,33 +215,37 @@ function subHash(bt) {
   return BLAKE2b.digest(toSubhead(bt));
 }
 /*hsd/lib/primitives/abstractblock.js*/
-function commitHash(bt,maskHash) {
+function commitHash(bt, maskHash) {
   // Note for mining pools: do not send
   // the mask itself to individual miners.
-  return BLAKE2b.multi(subHash(bt), maskHash/*maskHash(bt.prevBlock,mask)*/);
+  return BLAKE2b.multi(subHash(bt), maskHash /*maskHash(bt.prevBlock,mask)*/);
 }
 
 /*hsd/lib/primitives/abstractblock.js*/
-function toPrehead(bt,maskHash,nonce,time) {
-    const bw = bio.write(128);
+function toPrehead(bt, maskHash, nonce, time) {
+  const bw = bio.write(128);
 
-    bw.writeU32(nonce);
-    bw.writeU64(time);
-    bw.writeBytes(exports.padding(20,bt.prevBlock,bt.treeRoot));
-    bw.writeHash(bt.prevBlock);
-    bw.writeHash(bt.treeRoot);
-    bw.writeHash(commitHash(bt,maskHash));
+  bw.writeU32(nonce);
+  bw.writeU64(time);
+  bw.writeBytes(exports.padding(20, bt.prevBlock, bt.treeRoot));
+  bw.writeHash(bt.prevBlock);
+  bw.writeHash(bt.treeRoot);
+  bw.writeHash(commitHash(bt, maskHash));
 
-    // Exactly one blake2b block (128 bytes).
-    assert(bw.offset === BLAKE2b.blockSize);
+  // Exactly one blake2b block (128 bytes).
+  assert(bw.offset === BLAKE2b.blockSize);
 
-    return bw.render();
-  }
-
-exports.getMinerHeader = function getMinerHeader(hdrRaw,nonce,time,maskHash){
-  let bt = fromMiner(hdrRaw);
-  //console.log('fromminer',bt);
-  let prehead = toPrehead(bt,maskHash,nonce,time);
-  return prehead;
+  return bw.render();
 }
 
+exports.getMinerHeader = function getMinerHeader(
+  hdrRaw,
+  nonce,
+  time,
+  maskHash
+) {
+  let bt = fromMiner(hdrRaw);
+  //console.log('fromminer',bt);
+  let prehead = toPrehead(bt, maskHash, nonce, time);
+  return prehead;
+};
