@@ -90,16 +90,7 @@ class HandyMiner {
             }
 
           }
-          else if(this.poolDifficulty < 512 && this.poolDifficulty >= 0 && this.config.host.indexOf('hnspool') >= 0){
-            this.poolDifficulty = 512;
-            
-            if(process.env.HANDYRAW){
-              process.stdout.write(JSON.stringify({type:'stratumLog',data:'setting hnspool pool min difficulty at 512'})+'\n');
-            }
-            else{
-              console.log("\x1b[36mHNSPOOL POOL MINIMUM DIFF SET AT 512\x1b[0m");
-            }
-          }
+          
           this.useStaticPoolDifficulty = false;//true;
           if(this.poolDifficulty == -1){
             this.useStaticPoolDifficulty = false;;
@@ -317,27 +308,22 @@ class HandyMiner {
       let callTS = new Date().getTime();
       //this is some admin user i think?
       const serverAdminPass = stratumUsersFromArgs.serverPass;
-      if(this.config.mode == 'pool' && this.host.toLowerCase().indexOf('hnspool') >= 0){
-        //format connection messages for hnspool        
-        this.server.write(JSON.stringify({"id":this.targetID,"method":"authorize","params":[stratumUser,stratumPass, "handy-miner-v0.0.0"]})+"\n");
-        //this.server.write(JSON.stringify({"id":this.registerID,"method":"subscribe","params":["handy-miner-v0.0.0", this.sid]})+"\n");
+      
+      //format connection strings for solo stratum
+      if(this.config.mode == 'solo'){
+        this.server.write(JSON.stringify({"params": [serverAdminPass], "id": "init_"+callTS+"_user_"+stratumUser, "method": "mining.authorize_admin"})+'\n');
+      }
+      if(this.host.toLowerCase().indexOf('poolflare') == -1){
+        this.server.write(JSON.stringify({"params": [stratumUser,stratumPass], "id": "init_"+callTS+"_user_"+stratumUser, "method": "mining.add_user"})+'\n');
+      }
+      this.server.write(JSON.stringify({"id":this.targetID,"method":"mining.authorize","params":[stratumUser,stratumPass]})+"\n");
+      if(this.config.mode == 'solo'){
+        this.server.write(JSON.stringify({"id":this.registerID,"method":"mining.subscribe","params":[]})+"\n");
       }
       else{
-        //format connection strings for solo stratum
-        if(this.config.mode == 'solo'){
-          this.server.write(JSON.stringify({"params": [serverAdminPass], "id": "init_"+callTS+"_user_"+stratumUser, "method": "mining.authorize_admin"})+'\n');
-        }
-        if(this.host.toLowerCase().indexOf('poolflare') == -1){
-          this.server.write(JSON.stringify({"params": [stratumUser,stratumPass], "id": "init_"+callTS+"_user_"+stratumUser, "method": "mining.add_user"})+'\n');
-        }
-        this.server.write(JSON.stringify({"id":this.targetID,"method":"mining.authorize","params":[stratumUser,stratumPass]})+"\n");
-        if(this.config.mode == 'solo'){
-          this.server.write(JSON.stringify({"id":this.registerID,"method":"mining.subscribe","params":[]})+"\n");
-        }
-        else{
-          this.server.write(JSON.stringify({"id":this.registerID,"method":"mining.subscribe","params":['user agent/version']})+"\n");
-        }
+        this.server.write(JSON.stringify({"id":this.registerID,"method":"mining.subscribe","params":['handyminer/0.0.5']})+"\n");
       }
+    
 
 
       
@@ -565,71 +551,20 @@ class HandyMiner {
       //console.log('mining message',resp);
     resp.map((d)=>{
       switch(d.method){
-        case 'authorize':
-          this.IS_HNSPOOLSTRATUM = true;
-          let authResult = d.result;
-          if(authResult[1] === true){
-            if(fs.existsSync(process.env.HOME+'/.HandyMiner/hnspool_sid.txt')){
-              this.sid = fs.readFileSync(process.env.HOME+'/.HandyMiner/hnspool_sid.txt').toString('utf8');
-            }
-            this.server.write(JSON.stringify({"id":this.registerID,"method":"subscribe","params":["handy-miner-v1.0.0", this.sid]})+"\n");
-            if(process.env.HANDYRAW){
-              process.stdout.write(JSON.stringify({type:'stratumLog',data:'HNSPOOL AUTHORIZATION SUCCESS.'})+'\n')
-            }
-            else{
-              console.log("HANDY:: \x1b[36mHNSPOOL AUTHORIZATION SUCCESS\x1b[0m")
-            }
-          }
-          else{
-            if(process.env.HANDYRAW){
-              process.stdout.write(JSON.stringify({type:'stratumLog',data:'HNSPOOL AUTHORIZATION FAILED. RETRY IN 20s.'})+'\n')
-            }
-            else{
-              console.log("HANDY:: \x1b[36mHNSPOOL AUTHORIZATION FAILED\x1b[0m")
-              console.log("HANDY:: \x1b[36m RETRY IN 20s\x1b[0m")
-            }
-            //process.exit(0);
-            setTimeout(()=>{
-              this.startSocket();
-            },20000);
-          } 
-        break;
-        case 'subscribe':
-          this.sid = d.result;
-          fs.writeFileSync(process.env.HOME+'/.HandyMiner/hnspool_sid.txt',this.sid.toString('utf8'));
-          //this.nonce1 = d.result;
-          if(this.isMGoing){
-            this.nonce1Local = d.result;
-          }
-          else{
-            this.nonce1 = d.result;
-          }
-          this.IS_HNSPOOLSTRATUM = true;
-          break;
-        case 'notify':
-          this.IS_HNSPOOLSTRATUM = true;
-        break;
+        
         case 'mining.notify':
-        case 'notify':
           if(/*this.isMGoing*/isLocalResponse){
             this.lastLocalResponse = d;
             //this.refreshAllJobs();
           }
         break;
         case 'mining.set_difficulty':
-        case 'set_difficulty':
           this.minerIsConnected = true;
           if(!this.useStaticPoolDifficulty && this.config.mode == 'pool'){
             let lastDiff = this.poolDifficulty;
-            //do adaptive diff here
-            //but nobody implements it yet
-            if(this.host.toLowerCase().indexOf('hnspool') >= 0 || typeof d.params != 'object'){
-              this.poolDifficulty = parseFloat(d.params) * 256;
-            }
-            else{
-              this.poolDifficulty = parseFloat(d.params[0]) * 256;  
-            }
-
+            
+            this.poolDifficulty = parseFloat(d.params[0]) * 256;  
+            
             if(this.config.mode == 'pool' && (lastDiff != this.poolDifficulty)){
               this.refreshAllJobs();
                 if(process.env.HANDYRAW){
@@ -1012,44 +947,12 @@ class HandyMiner {
     let bits;
     let time;
     
-    if(this.IS_HNSPOOLSTRATUM && !this.isMGoing){
-      //support HNSPOOL response format
-      reservedRoot = response.params[3]; //these are prob all zeroes rn but here for future use
-      witnessRoot = response.params[4];
-      treeRoot = response.params[5];
-      maskHash = response.params[6];
-      version = response.params[7];
-      bits = response.params[8];
-      time = response.params[9];
-
-    }
-    else{
-      witnessRoot = response.params[3];
-      treeRoot = response.params[4];
-      reservedRoot = response.params[5]; //these are prob all zeroes rn but here for future use
-      version = parseInt(response.params[6], 16);
-      bits = parseInt(response.params[7], 16);
-      time = parseInt(response.params[8], 16);
-    }
-
-    if( this.IS_HNSPOOLSTRATUM && (!Number.isSafeInteger(version) || !Number.isSafeInteger(bits) || !Number.isSafeInteger(time)) ){
-      //if version,bits,time are not safe integer, reconnect to hnspool
-      this.isMGoing = false;
-      this.hasConnectionError = true;
-      this.isKilling = false;
-      if(typeof this.redundant != "undefined"){
-        this.redundant.destroy();
-        delete this.redundant;
-      }
-      else{
-        this.server.destroy();
-        
-      }
-      //restart hnspool connection
-      this.handleStratumReconnect();
-        
-      return;  
-    }
+    witnessRoot = response.params[3];
+    treeRoot = response.params[4];
+    reservedRoot = response.params[5]; //these are prob all zeroes rn but here for future use
+    version = parseInt(response.params[6], 16);
+    bits = parseInt(response.params[7], 16);
+    time = parseInt(response.params[8], 16);
 
     let bt = {};//new template.BlockTemplate();
 
@@ -1061,19 +964,16 @@ class HandyMiner {
     bt.witnessRoot = Buffer.from(witnessRoot,'hex');
     bt.reservedRoot = Buffer.from(reservedRoot,'hex');
 
-    if(this.IS_HNSPOOLSTRATUM && !this.isMGoing){
-      bt.maskHash = Buffer.from(maskHash, 'hex');
-    }
-    else{
-      //TODO: When hstratum finally sends out .maskHash() values add here
-      //like this:: bt.maskHash = Buffer.from(maskHash, 'hex');
-      //should be replaced in hstratum .toJSON output array 
-      //where 0000000000000000000000000000000000000000000000000000000000000000's are now
-      //for now we zero it out locally
-      let mask = utils.ZERO_HASH;
-      bt.mask = mask;
-      bt.maskHash = utils.maskHash(bt.prevBlock,mask);
-    }
+    
+    //TODO: When hstratum finally sends out .maskHash() values add here
+    //like this:: bt.maskHash = Buffer.from(maskHash, 'hex');
+    //should be replaced in hstratum .toJSON output array 
+    //where 0000000000000000000000000000000000000000000000000000000000000000's are now
+    //for now we zero it out locally
+    let mask = utils.ZERO_HASH;
+    bt.mask = mask;
+    bt.maskHash = utils.maskHash(bt.prevBlock,mask);
+  
 
     try{
       bt.target = utils.getTarget(bt.bits);
@@ -1249,32 +1149,23 @@ class HandyMiner {
     let submitMethod = 'mining.submit';
     //console.log('submit then');
     try{
-      if(this.IS_HNSPOOLSTRATUM && !this.isMGoing){
-        submission.push(this.stratumUser); //tell stratum who won: me.
-        submission.push(lastJob.work.jobID);
-        submission.push(this.sid + lastJob.nonce2);
-        submission.push(lastJob.work.time);
-        submission.push(parseInt(response.nonce.slice(8,16), 16));
-        submitMethod = 'submit';
-        //console.log(submission);
+    
+      submission.push(this.stratumUser); //tell stratum who won: me.
+      submission.push(lastJob.work.jobID);
+      submission.push(lastJob.nonce2);
+      //console.log('submit time',lastJob.work.time.toString(16),'overflow time',response.nonce.slice(0,8))
+      submission.push(response.nonce.slice(0,8));
+      if(this.isMGoing || ( this.config.mode == 'pool' ) ){
+        //6block formats to length == 8
+        submission.push(response.nonce.slice(8,16));
       }
       else{
-        submission.push(this.stratumUser); //tell stratum who won: me.
-        submission.push(lastJob.work.jobID);
-        submission.push(lastJob.nonce2);
-        //console.log('submit time',lastJob.work.time.toString(16),'overflow time',response.nonce.slice(0,8))
-        submission.push(response.nonce.slice(0,8));
-        if(this.isMGoing || ( this.config.mode == 'pool' && !this.IS_HNSPOOLSTRATUM ) ){
-          //6block formats to length == 8
-          submission.push(response.nonce.slice(8,16));
-        }
-        else{
-          //solo stratum expects length == 16
-          submission.push('00000000'+response.nonce.slice(8,16));  
-        }
-        submission.push(lastJob.work.blockTemplate.mask.toString('hex'));
-        submitMethod = 'mining.submit';
+        //solo stratum expects length == 16
+        submission.push('00000000'+response.nonce.slice(8,16));  
       }
+      submission.push(lastJob.work.blockTemplate.mask.toString('hex'));
+      submitMethod = 'mining.submit';
+    
     }
     catch(e){
       console.log('err',e);

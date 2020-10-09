@@ -133,7 +133,7 @@ Optional configuration items (just leave blank and hit enter if you dont know) :
 **stratum_port**: 6000
 
 non-registered: 
-**username**: wallet.workerName
+**username**: walletAddress.workerName
 **password**: anything
 
 registered:
@@ -145,8 +145,13 @@ registered:
 **stratum host**: stratum-us.hnspool.com
 **stratum_port**: 3001
 
-**username**: hnspool_registered_username
-**password**: hnspool_registered_password
+non-registered: 
+**username**: walletAddress.workerName
+**password**: anything
+
+registered: 
+**username**: hnspool_registered_username.workerName
+**password**: anything
 
 <a id="advancedOptions"></a>
 ## Advanced Options:
