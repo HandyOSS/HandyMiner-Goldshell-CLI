@@ -31,6 +31,7 @@ to communicate with Handshake HSD via Stratum Mining.
 # Easy Installation
        Easily installed within minutes.
        Simple ASIC Configuration setup.
+       Note: Make sure your device is set to not sleep automatically, otherwise your miner will stop mining.
 
 ### HandyMiner Running with Dashboard Enabled
 
