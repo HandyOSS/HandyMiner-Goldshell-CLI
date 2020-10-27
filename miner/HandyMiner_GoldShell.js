@@ -1058,7 +1058,7 @@ class HandyMiner {
                      //                        |BC02| = 700
                      //                        |    |       41 = temp target = 65C                         
                      //                        |    |       5A = temp target = 90C
-          let params = 'A53C96A21010000000A2EE02BC02040000004169C35A'; //default hs1 params
+          let params = 'A53C96A21010000000A2EE028A02040000004169C35A'; //default hs1 params
           if(asicInfo.modelName.indexOf('Plus') >= 0){
             //is hs1 plus, new frequencies!!
                     //                       |8A02| = frequency = 650 = ~102GH hs1plus, handyminer default
