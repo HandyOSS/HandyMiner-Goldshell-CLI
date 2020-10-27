@@ -14,8 +14,8 @@ During dependency installation, hiveOS users may run into errors about ```EACCES
 
 
 #### RaspbianOS
-During the installation it might result on not installing node-gyp.
-In order to fix that install `aptitude`. `Aptitude` analizes the issues at installation and proposes solutions to it.
+During the installation it might result in not installing node-gyp.
+In order to fix that install `aptitude`. `Aptitude` analyzes the issues at installation and proposes solutions to it.
 ```
 sudo apt-get install aptitude
 sudo aptitude install node-gyp
