@@ -17,3 +17,13 @@ Mine HNS.
 #### HiveOS Users possible gotchas during installation:
 
 During dependency installation, hiveOS users may run into errors about ```EACCES permissions for mkdir```. To resolve, run the install command like: ```sudo npm install --unsafe-perm=true --allow-root```
+
+
+#### RaspbianOS
+During the installation it might result in not installing node-gyp.
+In order to fix that install `aptitude`. `Aptitude` analyzes the issues at installation and proposes solutions to it.
+```
+sudo apt-get install aptitude
+sudo aptitude install node-gyp
+```
+
