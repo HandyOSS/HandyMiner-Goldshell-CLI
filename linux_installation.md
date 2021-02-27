@@ -7,6 +7,11 @@ sudo apt-get install -y nodejs
 sudo apt-get install alsa-utils
 ```
 
+If Make is not installed, you will not be able to run the npm install command, so run this first
+```
+sudo apt-get install build-essentials
+```
+
 Now that node.js is installed, install the module dependencies for HandyMiner in the HandyMiner-Goldshell-GUI directory
 ```
 npm install
