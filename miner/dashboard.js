@@ -94,7 +94,12 @@ class CLIDashboard{
 		this.asics[key].data.fan.push({fans:parseFloat(data.data.fanRpm),time:moment().format('HH:mm')});
 		this.asics[key].data.asicCoreClock.push({clock:parseFloat(data.data.frequency),time:moment().format('HH:mm')});
 		this.asics[key].data.asicMemoryClock.push({clock:parseFloat(data.data.frequency),time:moment().format('HH:mm')});
-		this.asics[key].data.power.push({power:57.0,time:moment().format('HH:mm')});
+		//no way to detect power, go by projected watts based on model..
+		let powerW = 57.0;
+		if(data.data.name.indexOf('Plus') >= 0){
+			powerW = 115.0;
+		}
+		this.asics[key].data.power.push({power:powerW,time:moment().format('HH:mm')});
 		this.asics[key].data.voltage.push({voltage:parseFloat(data.data.voltage),time:moment().format('HH:mm')});
 		this.asics[key].invalid = data.data.solutions.invalid;
 		this.asics[key].valid = data.data.solutions.valid;
@@ -352,9 +357,12 @@ class CLIDashboard{
 								this.addASICs(registeredASICs);
 							}
 						}
-						this.pushToLogs(json.data,'stdout');
+						this.pushToLogs([json],'stdout');
 					}
 					else if(json.type == 'asicStats'){
+						this.pushToLogs([json],'stdout');
+					}
+					else if(json.type == 'error'){
 						this.pushToLogs([json],'stdout');
 					}
 					else{
@@ -375,14 +383,14 @@ class CLIDashboard{
 							//its a status updat
 							this.pushToLogs(json.data||[json],'stdout');
 						}
-						else{
+						else if(json.type != "stratumLog"){
 							this.pushToLogs(json.data || [json],'stdout');
 						}
 						
 					}
-					if(json.type == 'error'){
+					/*if(json.type == 'error'){
 						this.pushToLogs(json.data,'error');
-					}
+					}*/
 					
 				}
 				catch(e){
@@ -450,6 +458,10 @@ class CLIDashboard{
 		jsonLines.map(json=>{
 
 			switch(json.type){
+				case 'registration':
+					let id = json.data.serialPort;
+					this.actuallyLog('\x1b[36mNEW ASIC CONNECTED: '+id+'\x1b[0m');
+				break;
 				case 'status':
 				case 'asicStats':
 					//hashrte update
@@ -480,6 +492,12 @@ class CLIDashboard{
 				case 'log':
 				case 'stratumLog':
 					this.actuallyLog(json);
+				break;
+				case 'error':
+					let isDisconnect = json.disconnected;
+					if(isDisconnect){
+						this.actuallyLog('\x1b[31mASIC '+json.data.asicID+' DISCONNECTED\x1b[0m');
+					}
 				break;
 			}
 			

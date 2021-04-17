@@ -20,7 +20,12 @@ fs.readFile('./goldshell.json',(err,data)=>{
 			//we spawn like this because a module in the configurator
 			//closes the process before the asic shuts down, meaning
 			//it stays running/messes up the workflows, sheesh..
-			let minerProcess = spawn('node',[__dirname+'/mine.js'],{env:process.env});
+			//detect HandyGUI node
+			let nodeExec = 'node';
+			if(typeof process.env.HANDYMINER_GUI_NODE_EXEC != "undefined"){
+				nodeExec = process.env.HANDYMINER_GUI_NODE_EXEC;
+			}
+			let minerProcess = spawn(nodeExec,[__dirname+'/mine.js'],{env:process.env});
 			minerProcess.stdout.pipe(process.stdout);
 			
 		}).catch(e=>{});

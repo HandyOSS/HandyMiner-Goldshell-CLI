@@ -2,6 +2,8 @@
 
 **HandyMiner-Goldshell-CLI**
 
+**Now Supporting the Goldshell HS1-Plus!**
+
 ### [HandyMiner-Goldshell-CLI Quick Start Guide](https://handyminer.github.io/HandyMiner-Goldshell-CLI/index.html)
 
 **HandyMiner Team Donation Address (HNS): ```hs1qwfpd5ukdwdew7tn7vdgtk0luglgckp3klj44f8```**
@@ -21,7 +23,7 @@
 
 **HandyMiner Social Channels:**
 
-[HandshakeTalk Telegram](https://t.me/handshaketalk); [HandyMiner Support](https://discord.gg/VMUneym)
+[HandshakeTalk Telegram](https://t.me/handshaketalk)
 
 
 Description: A simple CLI interface (+optional Dashboard) for HSD Mining to enable the Goldshell HS1
@@ -29,6 +31,7 @@ to communicate with Handshake HSD via Stratum Mining.
 # Easy Installation
        Easily installed within minutes.
        Simple ASIC Configuration setup.
+       Note: Make sure your device is set to not sleep automatically, otherwise your miner will stop mining.
 
 ### HandyMiner Running with Dashboard Enabled
 
@@ -41,9 +44,11 @@ to communicate with Handshake HSD via Stratum Mining.
 
 (**Windows Users**) [Git Bash](https://git-scm.com/downloads) A handy bash terminal, **install in Program Files/Git**
 
-(**Windows Users**) [Download STM32 Virtual COM PORT driver from Goldshell](https://github.com/goldshellminer/HS1/tree/master/miner/serial_driver) OR [Download STM32 Virtual COM PORT driver from STMicroelectronics](https://www.st.com/en/development-tools/stsw-stm32102.html)
+(**Windows Users**) [Download STM32 Virtual COM PORT driver](https://github.com/HandyMiner/HandyMiner-Goldshell-CLI/raw/master/windows_utils/STSW_STM32102_V1.5.0.zip) OR [Download STM32 Virtual COM PORT driver from STMicroelectronics](https://www.st.com/en/development-tools/stsw-stm32102.html)
 
 Linux: Dependencies install can be found in [./linux_installation.md](./linux_installation.md)
+
+Raspberry Pi Installation Steps [./raspberry_pi_installation.md](./raspberry_pi_installation.md)
 
 
 ## INSTALLATION
@@ -89,9 +94,9 @@ Note: many windows terminals dont do text coloring or dashboards right with npm 
 
 node ./miner/dashboard.js
 ```
-#### Linux Users note:
+#### Ubuntu Users note:
 
-To have this app talk to the goldshell serial devices out of the box, you may have to run with ```sudo``` (we did in ubuntu, but not raspi). If you run ```node mine.js``` and run into errors: To grant permissions to your user to talk to the devices without sudo, perform the steps in the [Linux FAQ](#linuxFAQ)
+To have this app talk to the goldshell serial devices out of the box, you may have to run with ```sudo``` (we did in ubuntu, but not raspi). If you run ```node mine.js``` and run into errors: To grant permissions to your user to talk to the devices without sudo, perform the steps in the [Ubuntu FAQ](#linuxFAQ)
 
 #### Mine blocks!
 
@@ -129,7 +134,7 @@ Optional configuration items (just leave blank and hit enter if you dont know) :
 **stratum_port**: 6000
 
 non-registered: 
-**username**: wallet.workerName
+**username**: walletAddress.workerName
 **password**: anything
 
 registered:
@@ -141,8 +146,13 @@ registered:
 **stratum host**: stratum-us.hnspool.com
 **stratum_port**: 3001
 
-**username**: hnspool_registered_username
-**password**: hnspool_registered_password
+non-registered: 
+**username**: walletAddress.workerName
+**password**: anything
+
+registered: 
+**username**: hnspool_registered_username.workerName
+**password**: anything
 
 <a id="advancedOptions"></a>
 ## Advanced Options:
@@ -176,7 +186,7 @@ C:\Program Files\nodejs\node_modules\npm\bin
 ```
 <a id="linuxFAQ"></a>
 
-#### Linux FAQ
+#### Ubuntu FAQ
 
 If you try to mine out of the box without ```sudo``` you may see an error that looks like:
 ```
@@ -197,7 +207,7 @@ It will output something like:
 ```crw-rw---- 1 root dialout 166, 0 Jul 18 18:06 /dev/ttyACM0```
 Which in our case, the group is ```dialout```
 1. To add your username to the dialout group:
-```sudo useradd -G dialout $USER```
+```sudo useradd -G dialout $USER``` (OR ON SOME SYSTEMS) ```sudo adduser $USER dialout```
 2. Now restart the computer and voila, you can now mine without sudo!
 
 
